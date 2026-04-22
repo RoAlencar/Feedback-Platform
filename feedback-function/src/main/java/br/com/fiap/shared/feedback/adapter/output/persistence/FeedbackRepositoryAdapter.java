@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback.adapter.out.persistence;
+package br.com.fiap.shared.feedback.adapter.output.persistence;
 
 import br.com.fiap.shared.feedback.application.port.FeedbackRepositoryPort;
 
