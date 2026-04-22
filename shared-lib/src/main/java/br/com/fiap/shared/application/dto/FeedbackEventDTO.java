@@ -12,7 +12,7 @@ public record FeedbackEventDTO(
         @JsonProperty("description") String description,
         @JsonProperty("grade") int grade,
         @JsonProperty("urgency") String urgency,
-        @JsonProperty("criatedAt") LocalDateTime createdAt) {
+        @JsonProperty("createdAt") LocalDateTime createdAt) {
 
     @JsonCreator
     public FeedbackEventDTO {
