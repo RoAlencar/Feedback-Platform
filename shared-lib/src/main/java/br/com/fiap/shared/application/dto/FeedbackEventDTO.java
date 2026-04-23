@@ -10,7 +10,7 @@ import java.util.UUID;
 public record FeedbackEventDTO(
         @JsonProperty("feedbackId") UUID feedbackId,
         @JsonProperty("description") String description,
-        @JsonProperty("grade") int grade,
+        @JsonProperty("score") int grade,
         @JsonProperty("urgency") String urgency,
         @JsonProperty("createdAt") LocalDateTime createdAt) {
 

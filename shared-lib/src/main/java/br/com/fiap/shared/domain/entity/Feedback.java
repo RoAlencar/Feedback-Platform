@@ -2,8 +2,9 @@ package br.com.fiap.shared.domain.entity;
 
 import br.com.fiap.shared.common.DateUtils;
 import br.com.fiap.shared.domain.valueObject.Description;
-import br.com.fiap.shared.domain.valueObject.Grade;
-import br.com.fiap.shared.domain.valueObject.Urgency;
+import br.com.fiap.shared.domain.valueObject.Score;
+import br.com.fiap.shared.domain.valueObject.ProcessStatus;
+import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,23 +14,25 @@ public final class Feedback {
 
     private final UUID id;
     private final Description description;
-    private final Grade grade;
-    private final Urgency urgency;
+    private final Score grade;
+    private final UrgencyLevel urgency;
     private final LocalDateTime createdAt;
+    private final ProcessStatus status;
 
-    public Feedback(UUID id, Description description, Grade grade, LocalDateTime createdAt) {
+    public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
         this.id = Objects.requireNonNull(id,"id");
         this.description = Objects.requireNonNull(description, "description");
-        this.grade = Objects.requireNonNull(grade, "grade");
+        this.grade = Objects.requireNonNull(score, "score");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
-        this.urgency = Urgency.fromGrade(grade);
+        this.urgency = UrgencyLevel.fromGrade(score);
+        this.status = ProcessStatus.PENDING;
     }
 
     public static Feedback create(String description, int grade) {
         return new Feedback(
                 UUID.randomUUID(),
                 new Description(description),
-                new Grade(grade),
+                new Score(grade),
                 DateUtils.now());
     }
 
@@ -41,16 +44,20 @@ public final class Feedback {
         return description;
     }
 
-    public Grade getGrade() {
+    public Score getGrade() {
         return grade;
     }
 
-    public Urgency getUrgency() {
+    public UrgencyLevel getUrgency() {
         return urgency;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public ProcessStatus getStatus() {
+        return status;
     }
 
     @Override

@@ -8,45 +8,45 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GradeTest {
+public class ScoreTest {
 
     @Test
     void deveCriarNotaComValorValidoMinimo() {
-        Grade grade = new Grade(0);
-        assertEquals(0, grade.valor());
+        Score score = new Score(0);
+        assertEquals(0, score.valor());
     }
 
     @Test
     void deveCriarNotaComValorValidoIntermediario() {
-        Grade grade = new Grade(5);
-        assertEquals(5, grade.valor());
+        Score score = new Score(5);
+        assertEquals(5, score.valor());
     }
 
     @Test
     void deveCriarNotaComValorValidoMaximo() {
-        Grade grade = new Grade(10);
-        assertEquals(10, grade.valor());
+        Score score = new Score(10);
+        assertEquals(10, score.valor());
     }
 
     @Test
     void deveLancarExcecaoParaValorAbaixoDoMinimo() {
-        assertThrows(ValidationException.class, () -> new Grade(-1));
+        assertThrows(ValidationException.class, () -> new Score(-1));
     }
 
     @Test
     void deveLancarExcecaoParaValorAcimaDoMaximo() {
-        assertThrows(ValidationException.class, () -> new Grade(11));
+        assertThrows(ValidationException.class, () -> new Score(11));
     }
 
     @Test
     void deveSerCriticaQuandoNotaMenorOuIgualAQuatro() {
-        assertTrue(new Grade(0).isCritical());
-        assertTrue(new Grade(4).isCritical());
+        assertTrue(new Score(0).isCritical());
+        assertTrue(new Score(2).isCritical());
     }
 
     @Test
     void naoDeveSerCriticaQuandoNotaMaiorQueQuatro() {
-        assertFalse(new Grade(5).isCritical());
-        assertFalse(new Grade(10).isCritical());
+        assertFalse(new Score(5).isCritical());
+        assertFalse(new Score(10).isCritical());
     }
 }
