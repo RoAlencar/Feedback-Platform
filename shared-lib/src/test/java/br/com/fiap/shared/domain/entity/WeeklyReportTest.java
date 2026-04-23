@@ -1,5 +1,6 @@
 package br.com.fiap.shared.domain.entity;
 
+import br.com.fiap.shared.domain.exception.PeriodDateException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -35,4 +36,22 @@ class WeeklyReportTest {
         assertEquals(totalFeedbacks, weeklyReport.getTotalFeedbacks());
         assertNotNull(weeklyReport.getGeneratedAt());
     }
+
+    @Test
+    void shouldThrowExceptionWhenPeriodStartIsAfterPeriodEnd() {
+        UUID id = UUID.randomUUID();
+        LocalDate periodStart = LocalDate.of(2026, 4, 27);
+        LocalDate periodEnd = LocalDate.of(2026, 4, 20);
+        BigDecimal averageScore = new BigDecimal("4.50");
+        Integer totalFeedbacks = 10;
+
+        assertThrows(PeriodDateException.class, () -> new WeeklyReport(
+                id,
+                periodStart,
+                periodEnd,
+                averageScore,
+                totalFeedbacks
+        ));
+    }
+
 }
