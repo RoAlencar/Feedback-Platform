@@ -10,11 +10,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class UrgencyReportRepository implements UrgencyReportItemPersistencePort {
+public class UrgencyReportItemRepository implements UrgencyReportItemPersistencePort {
 
     private final EntityManager entityManager;
 
-    public UrgencyReportRepository(EntityManager entityManager) {
+    public UrgencyReportItemRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

@@ -18,8 +18,8 @@ public class UrgencyReportItemMapper {
 
         entity.setId(UUID.randomUUID());
         entity.setWeeklyReport(weeklyReport);
-        entity.setUrgencyLevel(entity.getUrgencyLevel());
-        entity.setFeedbackCount(entity.getFeedbackCount());
+        entity.setUrgencyLevel(domain.getUrgency());
+        entity.setFeedbackCount(domain.getFeedbackCount());
 
         return entity;
     }
