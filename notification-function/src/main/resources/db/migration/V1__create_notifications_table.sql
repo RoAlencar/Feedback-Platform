@@ -1,0 +1,15 @@
+-- Base do domínio
+
+CREATE TABLE feedbacks (
+    id BIGSERIAL PRIMARY KEY,
+    descricao TEXT NOT NULL,
+    nota INTEGER NOT NULL CHECK (nota BETWEEN 0 AND 10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE admins (
+    user_id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(150) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
