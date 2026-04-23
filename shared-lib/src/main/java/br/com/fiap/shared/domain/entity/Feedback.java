@@ -3,7 +3,7 @@ package br.com.fiap.shared.domain.entity;
 import br.com.fiap.shared.common.DateUtils;
 import br.com.fiap.shared.domain.valueObject.Description;
 import br.com.fiap.shared.domain.valueObject.Grade;
-import br.com.fiap.shared.domain.valueObject.Urgency;
+import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,7 +14,7 @@ public final class Feedback {
     private final UUID id;
     private final Description description;
     private final Grade grade;
-    private final Urgency urgency;
+    private final UrgencyLevel urgency;
     private final LocalDateTime createdAt;
 
     public Feedback(UUID id, Description description, Grade grade, LocalDateTime createdAt) {
@@ -22,7 +22,7 @@ public final class Feedback {
         this.description = Objects.requireNonNull(description, "description");
         this.grade = Objects.requireNonNull(grade, "grade");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
-        this.urgency = Urgency.fromGrade(grade);
+        this.urgency = UrgencyLevel.fromGrade(grade);
     }
 
     public static Feedback create(String description, int grade) {
@@ -45,7 +45,7 @@ public final class Feedback {
         return grade;
     }
 
-    public Urgency getUrgency() {
+    public UrgencyLevel getUrgency() {
         return urgency;
     }
 
