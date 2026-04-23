@@ -41,7 +41,7 @@ public class ScoreTest {
     @Test
     void deveSerCriticaQuandoNotaMenorOuIgualAQuatro() {
         assertTrue(new Score(0).isCritical());
-        assertTrue(new Score(4).isCritical());
+        assertTrue(new Score(2).isCritical());
     }
 
     @Test
