@@ -3,6 +3,7 @@ package br.com.fiap.shared.domain.entity;
 import br.com.fiap.shared.common.DateUtils;
 import br.com.fiap.shared.domain.valueObject.Description;
 import br.com.fiap.shared.domain.valueObject.Grade;
+import br.com.fiap.shared.domain.valueObject.ProcessStatus;
 import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public final class Feedback {
     private final Grade grade;
     private final UrgencyLevel urgency;
     private final LocalDateTime createdAt;
+    private final ProcessStatus status;
 
     public Feedback(UUID id, Description description, Grade grade, LocalDateTime createdAt) {
         this.id = Objects.requireNonNull(id,"id");
@@ -23,6 +25,7 @@ public final class Feedback {
         this.grade = Objects.requireNonNull(grade, "grade");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
         this.urgency = UrgencyLevel.fromGrade(grade);
+        this.status = ProcessStatus.PENDING;
     }
 
     public static Feedback create(String description, int grade) {
@@ -51,6 +54,10 @@ public final class Feedback {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public ProcessStatus getStatus() {
+        return status;
     }
 
     @Override

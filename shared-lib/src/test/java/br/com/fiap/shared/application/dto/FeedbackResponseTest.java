@@ -18,6 +18,7 @@ public class FeedbackResponseTest {
         assertEquals(9, response.grade());
         assertEquals("NORMAL", response.urgency());
         assertEquals(feedback.getCreatedAt(), response.createdAt());
+        assertEquals(feedback.getStatus(), response.processStatus());
     }
 
     @Test
