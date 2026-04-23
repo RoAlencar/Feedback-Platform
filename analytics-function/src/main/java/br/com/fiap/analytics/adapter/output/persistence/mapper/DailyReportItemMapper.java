@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class DailyReportItemMapper {
 
-    private static DailyReportItemJpaEntity toJpaEntity(
+    public static DailyReportItemJpaEntity toJpaEntity(
             DailyReportItem domain,
             WeeklyReportJpaEntity weeklyReport
     ){
