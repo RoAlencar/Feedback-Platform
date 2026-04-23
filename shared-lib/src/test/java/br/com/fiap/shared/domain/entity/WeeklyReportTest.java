@@ -1,5 +1,6 @@
 package br.com.fiap.shared.domain.entity;
 
+import br.com.fiap.shared.domain.exception.AverageScoreException;
 import br.com.fiap.shared.domain.exception.PeriodDateException;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +47,23 @@ class WeeklyReportTest {
         Integer totalFeedbacks = 10;
 
         assertThrows(PeriodDateException.class, () -> new WeeklyReport(
+                id,
+                periodStart,
+                periodEnd,
+                averageScore,
+                totalFeedbacks
+        ));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAverageScoreIsNegative() {
+        UUID id = UUID.randomUUID();
+        LocalDate periodStart = LocalDate.of(2026, 4, 20);
+        LocalDate periodEnd = LocalDate.of(2026, 4, 26);
+        BigDecimal averageScore = new BigDecimal("-1.00");
+        Integer totalFeedbacks = 10;
+
+        assertThrows(AverageScoreException.class, () -> new WeeklyReport(
                 id,
                 periodStart,
                 periodEnd,
