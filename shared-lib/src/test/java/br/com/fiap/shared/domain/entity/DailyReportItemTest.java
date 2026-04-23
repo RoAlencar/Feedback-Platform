@@ -1,5 +1,6 @@
 package br.com.fiap.shared.domain.entity;
 
+import br.com.fiap.shared.domain.exception.FeedbackCountException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -18,5 +19,27 @@ class DailyReportItemTest {
         assertNotNull(item);
         assertEquals(date, item.getDate());
         assertEquals(feedbackCount, item.getFeedbackCount());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFeedbackCountIsNegative(){
+
+        LocalDate date = LocalDate.of(2026, 4, 23);
+        int feedbackCount = -5;
+
+        assertThrows(FeedbackCountException.class, () -> new DailyReportItem(
+                date,
+                feedbackCount
+        ));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDateIsNull() {
+        int feedbackCount = 5;
+
+        assertThrows(NullPointerException.class, () -> new DailyReportItem(
+                null,
+                feedbackCount
+        ));
     }
 }
