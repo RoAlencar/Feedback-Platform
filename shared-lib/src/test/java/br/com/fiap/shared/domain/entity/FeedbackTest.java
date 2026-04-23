@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FeedbackTest {
 
     @Test
-    void deveCriarFeedbackComUrgenciaNormalParaNotaAlta() {
+    void deveCriarFeedbackComUrgenciaBaixaParaNotaAlta() {
         Feedback feedback = Feedback.create("Ótimo curso", 8);
 
         assertEquals("Ótimo curso", feedback.getDescription().valor());
         assertEquals(8, feedback.getGrade().valor());
-        assertEquals(Urgency.NORMAL, feedback.getUrgency());
+        assertEquals(Urgency.MEDIUM, feedback.getUrgency());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class FeedbackTest {
         Feedback feedback = Feedback.create("Bom", 7);
 
         assertNotNull(feedback.getId());
-        assertNotNull(feedback.getCreatedAt());
+        assertNotNull(feedback.getSubmittedAt());
     }
 
     @Test
