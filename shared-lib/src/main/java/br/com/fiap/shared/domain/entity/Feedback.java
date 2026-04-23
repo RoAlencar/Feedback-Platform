@@ -2,9 +2,9 @@ package br.com.fiap.shared.domain.entity;
 
 import br.com.fiap.shared.common.DateUtils;
 import br.com.fiap.shared.domain.valueObject.Description;
-import br.com.fiap.shared.domain.valueObject.ProcessStatus;
 import br.com.fiap.shared.domain.valueObject.Score;
-import br.com.fiap.shared.domain.valueObject.Urgency;
+import br.com.fiap.shared.domain.valueObject.ProcessStatus;
+import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,18 +14,18 @@ public final class Feedback {
 
     private final UUID id;
     private final Description description;
-    private final Score score;
-    private final Urgency urgency;
-    private final LocalDateTime submittedAt;
-    private final ProcessStatus processStatus;
+    private final Score grade;
+    private final UrgencyLevel urgency;
+    private final LocalDateTime createdAt;
+    private final ProcessStatus status;
 
     public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
         this.id = Objects.requireNonNull(id,"id");
         this.description = Objects.requireNonNull(description, "description");
-        this.score = Objects.requireNonNull(score, "grade");
-        this.submittedAt = Objects.requireNonNull(createdAt, "createdAt");
-        this.urgency = Urgency.fromGrade(score);
-        this.processStatus = ProcessStatus.PENDING;
+        this.grade = Objects.requireNonNull(score, "score");
+        this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
+        this.urgency = UrgencyLevel.fromGrade(score);
+        this.status = ProcessStatus.PENDING;
     }
 
     public static Feedback create(String description, int grade) {
@@ -45,15 +45,19 @@ public final class Feedback {
     }
 
     public Score getGrade() {
-        return score;
+        return grade;
     }
 
-    public Urgency getUrgency() {
+    public UrgencyLevel getUrgency() {
         return urgency;
     }
 
-    public LocalDateTime getSubmittedAt() {
-        return submittedAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public ProcessStatus getStatus() {
+        return status;
     }
 
     @Override

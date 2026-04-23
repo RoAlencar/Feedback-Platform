@@ -1,6 +1,6 @@
 package br.com.fiap.shared.domain.entity;
 
-import br.com.fiap.shared.domain.valueObject.Urgency;
+import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,19 +9,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FeedbackTest {
 
     @Test
-    void deveCriarFeedbackComUrgenciaBaixaParaNotaAlta() {
+    void deveCriarFeedbackComUrgenciaNormalParaNotaAlta() {
         Feedback feedback = Feedback.create("Ótimo curso", 8);
 
         assertEquals("Ótimo curso", feedback.getDescription().valor());
         assertEquals(8, feedback.getGrade().valor());
-        assertEquals(Urgency.MEDIUM, feedback.getUrgency());
+        assertEquals(UrgencyLevel.LOW, feedback.getUrgency());
     }
 
     @Test
     void deveCriarFeedbackComUrgenciaCriticaParaNotaBaixa() {
         Feedback feedback = Feedback.create("Péssimo", 2);
 
-        assertEquals(Urgency.CRITICAL, feedback.getUrgency());
+        assertEquals(UrgencyLevel.CRITICAL, feedback.getUrgency());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class FeedbackTest {
         Feedback feedback = Feedback.create("Bom", 7);
 
         assertNotNull(feedback.getId());
-        assertNotNull(feedback.getSubmittedAt());
+        assertNotNull(feedback.getCreatedAt());
     }
 
     @Test
