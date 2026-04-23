@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback;
+package br.com.fiap.feedback;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

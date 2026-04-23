@@ -19,20 +19,21 @@ public final class Feedback {
     private final LocalDateTime submittedAt;
     private final ProcessStatus processStatus;
 
-    public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
-        this.id = Objects.requireNonNull(id,"id");
+    public Feedback(UUID id, Description description, Score score, ProcessStatus processStatus, LocalDateTime submittedAt) {
+        this.id = Objects.requireNonNull(id, "id");
         this.description = Objects.requireNonNull(description, "description");
-        this.score = Objects.requireNonNull(score, "grade");
-        this.submittedAt = Objects.requireNonNull(createdAt, "createdAt");
+        this.score = Objects.requireNonNull(score, "score");
+        this.processStatus = Objects.requireNonNull(processStatus, "processStatus");
+        this.submittedAt = Objects.requireNonNull(submittedAt, "submittedAt");
         this.urgency = Urgency.fromGrade(score);
-        this.processStatus = ProcessStatus.PENDING;
     }
 
-    public static Feedback create(String description, int grade) {
+    public static Feedback create(String description, int score) {
         return new Feedback(
                 UUID.randomUUID(),
                 new Description(description),
-                new Score(grade),
+                new Score(score),
+                ProcessStatus.PENDING,
                 DateUtils.now());
     }
 
@@ -44,7 +45,7 @@ public final class Feedback {
         return description;
     }
 
-    public Score getGrade() {
+    public Score getScore() {
         return score;
     }
 
@@ -54,6 +55,10 @@ public final class Feedback {
 
     public LocalDateTime getSubmittedAt() {
         return submittedAt;
+    }
+
+    public ProcessStatus getProcessStatus() {
+        return processStatus;
     }
 
     @Override
@@ -67,5 +72,6 @@ public final class Feedback {
     public int hashCode() {
         return id.hashCode();
     }
+
 
 }

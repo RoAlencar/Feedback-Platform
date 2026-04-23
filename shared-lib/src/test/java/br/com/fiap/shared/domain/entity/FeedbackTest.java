@@ -13,7 +13,7 @@ public class FeedbackTest {
         Feedback feedback = Feedback.create("Ótimo curso", 8);
 
         assertEquals("Ótimo curso", feedback.getDescription().valor());
-        assertEquals(8, feedback.getGrade().valor());
+        assertEquals(8, feedback.getScore().valor());
         assertEquals(Urgency.MEDIUM, feedback.getUrgency());
     }
 
