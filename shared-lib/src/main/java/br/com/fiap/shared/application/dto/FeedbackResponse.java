@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record FeedbackResponse(UUID id,
                                String description,
-                               int grade,
+                               int score,
                                String urgency,
                                LocalDateTime createdAt,
                                ProcessStatus processStatus) {
