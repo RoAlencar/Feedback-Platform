@@ -1,10 +1,21 @@
 package br.com.fiap.shared.domain.valueObject;
 
 public enum Urgency {
-    CRITICAL,
-    NORMAL;
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL;
 
-    public static Urgency fromGrade(Grade grade) {
-        return grade.isCritical() ? CRITICAL : NORMAL;
+    public static Urgency fromGrade(Score score) {
+        int valor = score.valor();
+        if (valor <= 2) {
+            return CRITICAL;
+        } else if (valor <= 5) {
+            return HIGH;
+        } else if (valor <= 8) {
+            return MEDIUM;
+        } else {
+            return LOW;
+        }
     }
 }
