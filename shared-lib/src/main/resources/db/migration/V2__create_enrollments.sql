@@ -1,17 +1,12 @@
 CREATE TYPE enrollment_status AS ENUM ('ACTIVE', 'INACTIVE');
 
 CREATE TABLE enrollments (
-  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  id UUID NOT NULL,
+  student_id UUID NOT NULL,
+  course_id UUID NOT NULL,
+  enrollment_date DATE NOT NULL,
   status enrollment_status NOT NULL,
-  CONSTRAINT pk_enrollments PRIMARY KEY (id)
+  CONSTRAINT pk_enrollments PRIMARY KEY (id),
+  CONSTRAINT fk_enrollments_courses FOREIGN KEY (course_id) REFERENCES courses(id),
+  CONSTRAINT uk_enrollments_student_course UNIQUE (student_id, course_id)
 );
-
-INSERT INTO
-  enrollments (status)
-VALUES
-  ('ACTIVE');
-
-INSERT INTO
-  enrollments (status)
-VALUES
-  ('INACTIVE');
