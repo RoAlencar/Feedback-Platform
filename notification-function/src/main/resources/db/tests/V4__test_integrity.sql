@@ -1,10 +1,10 @@
 -- ================================
--- TESTE DE INTEGRIDADE REFERENCIAL
+-- TESTE DE INTEGRIDADE REFERENCIAL PARA BANCO DE DADOS DE NOTIFICAÇÕES
 -- ================================
 
 -- Limpa dados (ordem importa por causa das FKs)
 DELETE FROM feedbacks;
-DELETE FROM users;
+DELETE FROM notifications;
 
 -- Verificar se as FKs existem
 SELECT
