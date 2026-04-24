@@ -18,18 +18,18 @@ public class CourseNameTest {
     @Test
     void shouldThrowExceptionWhenValueIsNull() {
         ValidationException exception = assertThrows(ValidationException.class, () -> new CourseName(null));
-        assertEquals("Nome do curso nao pode ser nulo ou vazio", exception.getMessage());
+        assertEquals("Course name cannot be null or blank", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenValueIsBlank() {
         ValidationException exception = assertThrows(ValidationException.class, () -> new CourseName("   "));
-        assertEquals("Nome do curso nao pode ser nulo ou vazio", exception.getMessage());
+        assertEquals("Course name cannot be null or blank", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenValueIsEmpty() {
         ValidationException exception = assertThrows(ValidationException.class, () -> new CourseName(""));
-        assertEquals("Nome do curso nao pode ser nulo ou vazio", exception.getMessage());
+        assertEquals("Course name cannot be null or blank", exception.getMessage());
     }
 }
