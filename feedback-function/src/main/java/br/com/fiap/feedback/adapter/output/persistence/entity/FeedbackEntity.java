@@ -57,10 +57,7 @@ public class FeedbackEntity {
         entity.urgency = feedback.getUrgency();
         entity.processStatus = feedback.getStatus();
         entity.submittedAt = feedback.getSubmittedAt();
-        entity.student = new StudentEntity(feedback.getStudentId());
-        entity.course = new CourseJpaEntity(feedback.getCourseId());
 
-        StudentEntity student = new StudentEntity();
         return entity;
     }
 

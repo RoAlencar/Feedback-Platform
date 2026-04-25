@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DiffGenerationConfig">
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotModelValue" value="feedback-function:feedback-function" />
     <option name="sourceModelValue" value="feedback-function:feedback-function" />
-    <option name="targetDbValue" value="aaa29a5f-e141-4a1d-8071-e852b10d5099" />
+    <option name="targetDbValue" value="d2b7258c-4393-4350-b39b-e7e14fc86338" />
   </component>
 </project>
