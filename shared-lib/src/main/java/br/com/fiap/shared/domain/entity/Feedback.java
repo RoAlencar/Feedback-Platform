@@ -14,7 +14,7 @@ public final class Feedback {
 
     private final UUID id;
     private final Description description;
-    private final Score grade;
+    private final Score score;
     private final UrgencyLevel urgency;
     private final LocalDateTime createdAt;
     private final ProcessStatus status;
@@ -22,7 +22,7 @@ public final class Feedback {
     public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
         this.id = Objects.requireNonNull(id,"id");
         this.description = Objects.requireNonNull(description, "description");
-        this.grade = Objects.requireNonNull(score, "score");
+        this.score = Objects.requireNonNull(score, "score");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
         this.urgency = UrgencyLevel.fromGrade(score);
         this.status = ProcessStatus.PENDING;
@@ -44,8 +44,8 @@ public final class Feedback {
         return description;
     }
 
-    public Score getGrade() {
-        return grade;
+    public Score getScore() {
+        return score;
     }
 
     public UrgencyLevel getUrgency() {
