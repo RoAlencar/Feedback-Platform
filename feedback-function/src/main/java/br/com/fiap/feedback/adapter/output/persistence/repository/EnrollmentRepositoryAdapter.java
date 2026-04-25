@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.repository;
+package br.com.fiap.feedback.adapter.output.persistence.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import br.com.fiap.shared.application.port.output.EnrollmentRepositoryPort;
 import br.com.fiap.shared.domain.entity.Enrollment;
-import br.com.fiap.shared.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
-import br.com.fiap.shared.feedback.adapter.output.persistence.mapper.EnrollmentMapper;
+import br.com.fiap.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.mapper.EnrollmentMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

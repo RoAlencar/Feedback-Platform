@@ -1,7 +1,7 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.mapper;
+package br.com.fiap.feedback.adapter.output.persistence.mapper;
 
 import br.com.fiap.shared.domain.entity.Enrollment;
-import br.com.fiap.shared.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
 
 public class EnrollmentMapper {
 

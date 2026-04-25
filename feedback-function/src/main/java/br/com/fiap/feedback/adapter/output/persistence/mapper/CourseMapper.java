@@ -1,8 +1,8 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.mapper;
+package br.com.fiap.feedback.adapter.output.persistence.mapper;
 
 import br.com.fiap.shared.domain.entity.Course;
 import br.com.fiap.shared.domain.valueObject.CourseName;
-import br.com.fiap.shared.feedback.adapter.output.persistence.entity.CourseJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
 
 public class CourseMapper {
 

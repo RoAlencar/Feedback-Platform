@@ -19,7 +19,7 @@ public record FeedbackResponse(UUID id,
                 feedback.getDescription().valor(),
                 feedback.getScore().valor(),
                 feedback.getUrgency().name(),
-                feedback.getCreatedAt(),
+                feedback.getSubmittedAt(),
                 feedback.getStatus()
         );
     }

@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.repository;
+package br.com.fiap.feedback.adapter.output.persistence.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import br.com.fiap.shared.domain.entity.Course;
 import br.com.fiap.shared.domain.entity.Enrollment;
 import br.com.fiap.shared.domain.valueObject.EnrollmentStatus;
-import br.com.fiap.shared.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

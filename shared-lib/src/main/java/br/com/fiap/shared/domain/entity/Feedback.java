@@ -16,23 +16,24 @@ public final class Feedback {
     private final Description description;
     private final Score score;
     private final UrgencyLevel urgency;
-    private final LocalDateTime createdAt;
+    private final LocalDateTime submittedAt;
     private final ProcessStatus status;
 
-    public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
+    public Feedback(UUID id, Description description, Score score,ProcessStatus processStatus, LocalDateTime submittedAt) {
         this.id = Objects.requireNonNull(id,"id");
         this.description = Objects.requireNonNull(description, "description");
         this.score = Objects.requireNonNull(score, "score");
-        this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
+        this.submittedAt = Objects.requireNonNull(submittedAt, "submittedAt");
         this.urgency = UrgencyLevel.fromGrade(score);
-        this.status = ProcessStatus.PENDING;
+        this.status = Objects.requireNonNull(processStatus, "processStatus");
     }
 
-    public static Feedback create(String description, int grade) {
+    public static Feedback create(String description, int grade, ProcessStatus processStatus) {
         return new Feedback(
                 UUID.randomUUID(),
                 new Description(description),
                 new Score(grade),
+                processStatus,
                 DateUtils.now());
     }
 
@@ -52,8 +53,8 @@ public final class Feedback {
         return urgency;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
     }
 
     public ProcessStatus getStatus() {

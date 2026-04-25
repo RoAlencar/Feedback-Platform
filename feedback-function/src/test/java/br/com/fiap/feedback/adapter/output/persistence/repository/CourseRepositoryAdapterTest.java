@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.repository;
+package br.com.fiap.feedback.adapter.output.persistence.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import br.com.fiap.shared.domain.entity.Course;
-import br.com.fiap.shared.feedback.adapter.output.persistence.entity.CourseJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

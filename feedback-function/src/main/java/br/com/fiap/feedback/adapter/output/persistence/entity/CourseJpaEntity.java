@@ -1,4 +1,4 @@
-package br.com.fiap.shared.feedback.adapter.output.persistence.entity;
+package br.com.fiap.feedback.adapter.output.persistence.entity;
 
 import java.util.UUID;
 
