@@ -15,9 +15,10 @@ public class FeedbackResponseTest {
 
         assertEquals(feedback.getId(), response.id());
         assertEquals("Muito bom", response.description());
-        assertEquals(9, response.grade());
+        assertEquals(9, response.score());
         assertEquals("LOW", response.urgency());
-        assertEquals(feedback.getSubmittedAt(), response.createdAt());
+        assertEquals(feedback.getCreatedAt(), response.createdAt());
+        assertEquals(feedback.getStatus(), response.processStatus());
     }
 
     @Test
