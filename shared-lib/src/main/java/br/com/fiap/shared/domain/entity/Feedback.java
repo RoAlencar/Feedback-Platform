@@ -13,14 +13,18 @@ import java.util.UUID;
 public final class Feedback {
 
     private final UUID id;
+    private final UUID studentId;
+    private final UUID courseId;
     private final Description description;
     private final Score score;
     private final UrgencyLevel urgency;
     private final LocalDateTime submittedAt;
     private final ProcessStatus status;
 
-    public Feedback(UUID id, Description description, Score score,ProcessStatus processStatus, LocalDateTime submittedAt) {
+    public Feedback(UUID id, UUID studentId, UUID courseId, Description description, Score score, ProcessStatus processStatus, LocalDateTime submittedAt) {
         this.id = Objects.requireNonNull(id,"id");
+        this.studentId = Objects.requireNonNull(studentId, "studentId");
+        this.courseId = Objects.requireNonNull(courseId, "courseId");
         this.description = Objects.requireNonNull(description, "description");
         this.score = Objects.requireNonNull(score, "score");
         this.submittedAt = Objects.requireNonNull(submittedAt, "submittedAt");
@@ -28,17 +32,27 @@ public final class Feedback {
         this.status = Objects.requireNonNull(processStatus, "processStatus");
     }
 
-    public static Feedback create(String description, int grade, ProcessStatus processStatus) {
+    public static Feedback create(UUID studentId, UUID courseId, String description, int grade) {
         return new Feedback(
                 UUID.randomUUID(),
+                studentId,
+                courseId,
                 new Description(description),
                 new Score(grade),
-                processStatus,
+                ProcessStatus.PENDING,
                 DateUtils.now());
     }
 
     public UUID getId() {
         return id;
+    }
+
+    public UUID getStudentId() {
+        return studentId;
+    }
+
+    public UUID getCourseId() {
+        return courseId;
     }
 
     public Description getDescription() {

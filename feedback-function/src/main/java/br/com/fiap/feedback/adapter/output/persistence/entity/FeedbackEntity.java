@@ -7,6 +7,7 @@ import br.com.fiap.shared.domain.valueObject.Score;
 import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -49,9 +50,11 @@ public class FeedbackEntity {
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
 
-    public static FeedbackEntity fromDomain(Feedback feedback) {
+    public static FeedbackEntity fromDomain(Feedback feedback, EntityManager em) {
         FeedbackEntity entity = new FeedbackEntity();
         entity.id = feedback.getId();
+        entity.student = em.getReference(StudentEntity.class, feedback.getStudentId());
+        entity.course = em.getReference(CourseJpaEntity.class, feedback.getCourseId());
         entity.description = feedback.getDescription().valor();
         entity.score = feedback.getScore().valor();
         entity.urgency = feedback.getUrgency();
@@ -64,6 +67,8 @@ public class FeedbackEntity {
     public Feedback toDomain() {
         return new Feedback(
                 id,
+                student.toDomain().getId(),
+                course.getId(),
                 new Description(description),
                 new Score(score),
                 processStatus,

@@ -6,6 +6,7 @@ import br.com.fiap.shared.application.port.output.FeedbackRepositoryPort;
 import br.com.fiap.shared.domain.entity.Feedback;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -19,10 +20,13 @@ public class FeedbackRepositoryAdapter implements FeedbackRepositoryPort {
     @Inject
     FeedbackJpaRepository jpaRepository;
 
+    @Inject
+    EntityManager entityManager;
+
     @Override
     @Transactional
     public void save(Feedback feedback) {
-        jpaRepository.persist(FeedbackEntity.fromDomain(feedback));
+        jpaRepository.persist(FeedbackEntity.fromDomain(feedback, entityManager));
     }
 
     @Override
