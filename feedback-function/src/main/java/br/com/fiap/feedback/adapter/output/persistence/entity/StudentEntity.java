@@ -26,6 +26,10 @@ public class StudentEntity {
     private boolean isActive;
 
 
+    public UUID getId() {
+        return id;
+    }
+
     public static StudentEntity fromDomain(Student student) {
         StudentEntity entity = new StudentEntity();
         entity.id = student.getId();

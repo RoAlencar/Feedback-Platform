@@ -67,7 +67,7 @@ public class FeedbackEntity {
     public Feedback toDomain() {
         return new Feedback(
                 id,
-                student.toDomain().getId(),
+                student.getId(),
                 course.getId(),
                 new Description(description),
                 new Score(score),
