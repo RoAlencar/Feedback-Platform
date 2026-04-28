@@ -13,26 +13,33 @@ import java.util.UUID;
 public final class Feedback {
 
     private final UUID id;
+    private final UUID studentId;
+    private final UUID courseId;
     private final Description description;
-    private final Score grade;
+    private final Score score;
     private final UrgencyLevel urgency;
-    private final LocalDateTime createdAt;
+    private final LocalDateTime submittedAt;
     private final ProcessStatus status;
 
-    public Feedback(UUID id, Description description, Score score, LocalDateTime createdAt) {
+    public Feedback(UUID id, UUID studentId, UUID courseId, Description description, Score score, ProcessStatus processStatus, LocalDateTime submittedAt) {
         this.id = Objects.requireNonNull(id,"id");
+        this.studentId = Objects.requireNonNull(studentId, "studentId");
+        this.courseId = Objects.requireNonNull(courseId, "courseId");
         this.description = Objects.requireNonNull(description, "description");
-        this.grade = Objects.requireNonNull(score, "score");
-        this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
+        this.score = Objects.requireNonNull(score, "score");
+        this.submittedAt = Objects.requireNonNull(submittedAt, "submittedAt");
         this.urgency = UrgencyLevel.fromGrade(score);
-        this.status = ProcessStatus.PENDING;
+        this.status = Objects.requireNonNull(processStatus, "processStatus");
     }
 
-    public static Feedback create(String description, int grade) {
+    public static Feedback create(UUID studentId, UUID courseId, String description, int grade) {
         return new Feedback(
                 UUID.randomUUID(),
+                studentId,
+                courseId,
                 new Description(description),
                 new Score(grade),
+                ProcessStatus.PENDING,
                 DateUtils.now());
     }
 
@@ -40,20 +47,28 @@ public final class Feedback {
         return id;
     }
 
+    public UUID getStudentId() {
+        return studentId;
+    }
+
+    public UUID getCourseId() {
+        return courseId;
+    }
+
     public Description getDescription() {
         return description;
     }
 
-    public Score getGrade() {
-        return grade;
+    public Score getScore() {
+        return score;
     }
 
     public UrgencyLevel getUrgency() {
         return urgency;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
     }
 
     public ProcessStatus getStatus() {

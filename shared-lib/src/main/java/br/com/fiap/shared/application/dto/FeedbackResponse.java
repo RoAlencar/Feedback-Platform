@@ -17,9 +17,9 @@ public record FeedbackResponse(UUID id,
         return new FeedbackResponse(
                 feedback.getId(),
                 feedback.getDescription().valor(),
-                feedback.getGrade().valor(),
+                feedback.getScore().valor(),
                 feedback.getUrgency().name(),
-                feedback.getCreatedAt(),
+                feedback.getSubmittedAt(),
                 feedback.getStatus()
         );
     }
