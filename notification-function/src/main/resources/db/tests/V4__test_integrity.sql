@@ -1,6 +1,5 @@
 -- ============================================
--- FULL INTEGRATION & DATA INTEGRITY TEST
--- WITH STEP-BY-STEP VALIDATION
+-- FULL INTEGRATION & DATA INTEGRITY TEST (UUID VERSION)
 -- ============================================
 
 -- ============================================
@@ -10,7 +9,6 @@ DELETE FROM notifications;
 DELETE FROM feedbacks;
 DELETE FROM admins;
 
--- Validate clean state
 SELECT 'STEP 0 - CLEAN STATE' AS step, * FROM notifications;
 
 -- ============================================
@@ -24,16 +22,36 @@ FROM pg_constraint
 WHERE conrelid::regclass = 'notifications'::regclass;
 
 -- ============================================
--- 2. BASE DATA (SEED)
+-- 2. DEFINE FIXED UUIDs FOR TEST
 -- ============================================
 
-INSERT INTO feedbacks (id, descricao, nota, created_at)
-VALUES (1, 'Feedback test', 5, NOW());
+-- Usando UUID fixo para manter controle do fluxo
+-- (melhor prática para teste)
 
-INSERT INTO admins (user_id, nome, email, created_at)
-VALUES (1, 'Admin Test', 'admin@email.com', NOW());
+-- Feedback
+DO $$
+BEGIN
+    INSERT INTO feedbacks (id, descricao, nota, created_at)
+    VALUES (
+        '11111111-1111-1111-1111-111111111111',
+        'Feedback test',
+        5,
+        NOW()
+    );
+END $$;
 
--- Validate seed
+-- Admin
+DO $$
+BEGIN
+    INSERT INTO admins (user_id, nome, email, created_at)
+    VALUES (
+        '22222222-2222-2222-2222-222222222222',
+        'Admin Test',
+        'admin@email.com',
+        NOW()
+    );
+END $$;
+
 SELECT 'STEP 2 - SEED DATA' AS step, * FROM feedbacks;
 SELECT 'STEP 2 - SEED DATA' AS step, * FROM admins;
 
@@ -42,6 +60,7 @@ SELECT 'STEP 2 - SEED DATA' AS step, * FROM admins;
 -- ============================================
 
 INSERT INTO notifications (
+    id,
     feedback_id,
     receiver_id,
     channel,
@@ -49,15 +68,15 @@ INSERT INTO notifications (
     attempts,
     message
 ) VALUES (
-    1,
-    1,
+    '33333333-3333-3333-3333-333333333333',
+    '11111111-1111-1111-1111-111111111111',
+    '22222222-2222-2222-2222-222222222222',
     'EMAIL',
     'PENDING',
     0,
     'Notification test'
 );
 
--- Validate insert
 SELECT 'STEP 3 - AFTER INSERT (PENDING)' AS step, * FROM notifications;
 
 -- ============================================
@@ -68,9 +87,8 @@ UPDATE notifications
 SET send_status = 'SENT',
     sent_at = NOW(),
     updated_at = NOW()
-WHERE id = 1;
+WHERE id = '33333333-3333-3333-3333-333333333333';
 
--- Validate SENT
 SELECT 'STEP 4 - AFTER SENT' AS step, * FROM notifications;
 
 -- ============================================
@@ -81,9 +99,8 @@ UPDATE notifications
 SET send_status = 'FAILED',
     attempts = attempts + 1,
     updated_at = NOW()
-WHERE id = 1;
+WHERE id = '33333333-3333-3333-3333-333333333333';
 
--- Validate FAILED
 SELECT 'STEP 5 - AFTER FAILED' AS step, * FROM notifications;
 
 -- ============================================
@@ -109,8 +126,8 @@ INSERT INTO notifications (
     attempts,
     message
 ) VALUES (
-    999,   -- does not exist ❌
-    1,
+    '99999999-9999-9999-9999-999999999999', -- ❌ inexistente
+    '22222222-2222-2222-2222-222222222222',
     'EMAIL',
     'PENDING',
     0,
@@ -126,8 +143,8 @@ INSERT INTO notifications (
     attempts,
     message
 ) VALUES (
-    1,
-    999,   -- does not exist ❌
+    '11111111-1111-1111-1111-111111111111',
+    '88888888-8888-8888-8888-888888888888', -- ❌ inexistente
     'EMAIL',
     'PENDING',
     0,

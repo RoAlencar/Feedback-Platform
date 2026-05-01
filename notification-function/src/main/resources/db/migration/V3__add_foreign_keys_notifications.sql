@@ -1,4 +1,6 @@
--- Integridade referencial (FKs)
+-- ============================================
+-- ADD FOREIGN KEYS
+-- ============================================
 
 ALTER TABLE notifications
 ADD CONSTRAINT fk_notifications_feedback
