@@ -1,2 +1,0 @@
-ALTER TABLE notifications 
-ALTER COLUMN send_status SET DEFAULT 'PENDING';

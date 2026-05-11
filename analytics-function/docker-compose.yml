@@ -3,15 +3,15 @@ version: "3.9"
 services:
   postgres:
     image: postgres:16
-    container_name: feedback-postgres
+    container_name: analytics-postgres
     environment:
-      POSTGRES_DB: feedback_platform
+      POSTGRES_DB: analytics_platform
       POSTGRES_USER: tech_challenge4
       POSTGRES_PASSWORD: grupo13
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
-      - feedback_postgres_data:/var/lib/postgresql/data
+      - analytics_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  feedback_postgres_data:
+  analytics_postgres_data:

@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: notification-postgres
+    environment:
+      POSTGRES_DB: notification_platform
+      POSTGRES_USER: tech_challenge4
+      POSTGRES_PASSWORD: grupo13
+    ports:
+      - "5434:5432"
+    volumes:
+      - notification_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  notification_postgres_data:
