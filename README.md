@@ -152,6 +152,21 @@ Deploy independente por módulo:
 
 ---
 
+## 🚨 Regra de urgência da avaliação
+
+A urgência do feedback será calculada automaticamente a partir da nota informada pelo estudante.
+
+| Faixa da nota | Urgência |
+|---|---|
+| 0 a 2 | CRITICAL |
+| 3 a 4 | HIGH |
+| 5 a 7 | MEDIUM |
+| 8 a 10 | LOW |
+
+Quanto menor a nota, maior será a urgência do feedback. Essa informação será persistida internamente no campo `urgency_level`, mas não será retornada no response público do endpoint `POST /avaliacao`, pois será utilizada pelos fluxos internos de notificação, administração e analytics.
+
+---
+
 ## 🔔 Notificações
 
 Disparadas quando:
