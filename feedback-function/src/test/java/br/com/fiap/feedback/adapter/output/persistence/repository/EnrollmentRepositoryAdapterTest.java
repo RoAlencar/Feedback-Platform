@@ -11,10 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
+import br.com.fiap.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
+import br.com.fiap.feedback.adapter.output.persistence.entity.StudentJpaEntity;
 import br.com.fiap.shared.domain.entity.Course;
 import br.com.fiap.shared.domain.entity.Enrollment;
 import br.com.fiap.shared.domain.valueObject.EnrollmentStatus;
-import br.com.fiap.feedback.adapter.output.persistence.entity.EnrollmentJpaEntity;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -32,14 +33,25 @@ class EnrollmentRepositoryAdapterTest {
     @Inject
     EntityManager entityManager;
 
+    private void createTestStudent(UUID studentId) {
+        StudentJpaEntity student = new StudentJpaEntity(
+                studentId,
+                "Test Student " + studentId,
+                studentId + "@test.com",
+                true);
+        entityManager.persist(student);
+        entityManager.flush();
+    }
+
     @Test
     @Transactional
     void shouldPersistEnrollmentSuccessfully() {
         // Arrange
         Course course = Course.create("Test Course");
         courseRepository.save(course);
-        
+
         UUID studentId = UUID.randomUUID();
+        createTestStudent(studentId);
         Enrollment enrollment = Enrollment.create(studentId, course.getId());
 
         // Act
@@ -62,8 +74,9 @@ class EnrollmentRepositoryAdapterTest {
         // Arrange
         Course course = Course.create("Advanced Java");
         courseRepository.save(course);
-        
+
         UUID studentId = UUID.randomUUID();
+        createTestStudent(studentId);
         Enrollment enrollment = Enrollment.create(studentId, course.getId());
         enrollmentRepository.save(enrollment);
 
@@ -92,12 +105,13 @@ class EnrollmentRepositoryAdapterTest {
     void shouldFindEnrollmentsByStudentId() {
         // Arrange
         UUID studentId = UUID.randomUUID();
-        
+        createTestStudent(studentId);
+
         Course course1 = Course.create("Spring Boot");
         Course course2 = Course.create("Microservices");
         courseRepository.save(course1);
         courseRepository.save(course2);
-        
+
         Enrollment enrollment1 = Enrollment.create(studentId, course1.getId());
         Enrollment enrollment2 = Enrollment.create(studentId, course2.getId());
         enrollmentRepository.save(enrollment1);
@@ -117,10 +131,12 @@ class EnrollmentRepositoryAdapterTest {
         // Arrange
         Course course = Course.create("Database Design");
         courseRepository.save(course);
-        
+
         UUID student1Id = UUID.randomUUID();
         UUID student2Id = UUID.randomUUID();
-        
+        createTestStudent(student1Id);
+        createTestStudent(student2Id);
+
         Enrollment enrollment1 = Enrollment.create(student1Id, course.getId());
         Enrollment enrollment2 = Enrollment.create(student2Id, course.getId());
         enrollmentRepository.save(enrollment1);
@@ -140,8 +156,9 @@ class EnrollmentRepositoryAdapterTest {
         // Arrange
         Course course = Course.create("Software Architecture");
         courseRepository.save(course);
-        
+
         UUID studentId = UUID.randomUUID();
+        createTestStudent(studentId);
         Enrollment enrollment = Enrollment.create(studentId, course.getId());
         enrollmentRepository.save(enrollment);
 
@@ -160,15 +177,15 @@ class EnrollmentRepositoryAdapterTest {
         // Arrange
         Course course = Course.create("Inactive Course Test");
         courseRepository.save(course);
-        
+
         UUID studentId = UUID.randomUUID();
+        createTestStudent(studentId);
         Enrollment enrollment = new Enrollment(
                 UUID.randomUUID(),
                 studentId,
                 course.getId(),
                 LocalDate.now().minusDays(30),
-                EnrollmentStatus.INACTIVE
-        );
+                EnrollmentStatus.INACTIVE);
 
         // Act
         enrollmentRepository.save(enrollment);
@@ -186,17 +203,17 @@ class EnrollmentRepositoryAdapterTest {
         // Arrange
         Course course = Course.create("Date Preservation Test");
         courseRepository.save(course);
-        
+
         UUID studentId = UUID.randomUUID();
+        createTestStudent(studentId);
         LocalDate enrollmentDate = LocalDate.now().minusDays(10);
-        
+
         Enrollment enrollment = new Enrollment(
                 UUID.randomUUID(),
                 studentId,
                 course.getId(),
                 enrollmentDate,
-                EnrollmentStatus.ACTIVE
-        );
+                EnrollmentStatus.ACTIVE);
 
         // Act
         enrollmentRepository.save(enrollment);
