@@ -9,29 +9,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
-import br.com.fiap.analytics.adapter.output.persistence.entity.UrgencyReportItemJpaEntity;
+import br.com.fiap.analytics.adapter.output.persistence.entity.DailyReportItemJpaEntity;
 import br.com.fiap.analytics.adapter.output.persistence.entity.WeeklyReportJpaEntity;
 import br.com.fiap.analytics.adapter.output.persistence.mapper.WeeklyReportMapper;
-import br.com.fiap.shared.domain.entity.UrgencyReportItem;
+import br.com.fiap.shared.domain.entity.DailyReportItem;
 import br.com.fiap.shared.domain.entity.WeeklyReport;
-import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @QuarkusTest
-class UrgencyReportItemRepositoryTest {
+class DailyReportItemRepositoryTest {
 
         @Inject
-        UrgencyReportItemRepository urgencyReportItemRepository;
+        DailyReportItemRepository dailyReportItemRepository;
 
         @Inject
         EntityManager entityManager;
 
         @Test
         @Transactional
-        void shouldPersistUrgencyReportItemSuccessfully() {
+        void shouldPersistDailyReportItemSuccessfully() {
                 UUID weeklyReportId = UUID.randomUUID();
 
                 WeeklyReport weeklyReport = new WeeklyReport(
@@ -44,25 +43,25 @@ class UrgencyReportItemRepositoryTest {
                 WeeklyReportJpaEntity weeklyReportJpaEntity = WeeklyReportMapper.toJpaEntity(weeklyReport);
                 entityManager.persist(weeklyReportJpaEntity);
 
-                UrgencyReportItem urgencyReportItem = new UrgencyReportItem(
-                                UrgencyLevel.CRITICAL,
-                                4);
+                DailyReportItem dailyReportItem = new DailyReportItem(
+                                LocalDate.of(2026, 4, 23),
+                                3);
 
-                urgencyReportItemRepository.save(urgencyReportItem, weeklyReportJpaEntity);
+                dailyReportItemRepository.save(dailyReportItem, weeklyReportJpaEntity);
 
-                List<UrgencyReportItemJpaEntity> results = entityManager
-                                .createQuery("SELECT u FROM UrgencyReportItemJpaEntity u WHERE u.weeklyReport.id = :weeklyReportId",
-                                                UrgencyReportItemJpaEntity.class)
+                List<DailyReportItemJpaEntity> results = entityManager
+                                .createQuery("SELECT d FROM DailyReportItemJpaEntity d WHERE d.weeklyReport.id = :weeklyReportId",
+                                                DailyReportItemJpaEntity.class)
                                 .setParameter("weeklyReportId", weeklyReportId)
                                 .getResultList();
 
                 assertEquals(1, results.size());
 
-                UrgencyReportItemJpaEntity persisted = results.get(0);
+                DailyReportItemJpaEntity persisted = results.get(0);
 
                 assertNotNull(persisted.getId());
-                assertEquals(UrgencyLevel.CRITICAL, persisted.getUrgencyLevel());
-                assertEquals(4, persisted.getFeedbackCount());
+                assertEquals(LocalDate.of(2026, 4, 23), persisted.getDate());
+                assertEquals(3, persisted.getFeedbackCount());
                 assertNotNull(persisted.getWeeklyReport());
                 assertEquals(weeklyReportId, persisted.getWeeklyReport().getId());
         }
