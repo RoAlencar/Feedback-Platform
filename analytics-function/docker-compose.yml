@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: tech_challenge4
       POSTGRES_PASSWORD: grupo13
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - analytics_postgres_data:/var/lib/postgresql/data
 
