@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   postgres:
@@ -9,7 +8,7 @@ services:
       POSTGRES_USER: tech_challenge4
       POSTGRES_PASSWORD: grupo13
     ports:
-      - "5434:5432"
+      - "5436:5432"
     volumes:
       - notification_postgres_data:/var/lib/postgresql/data
 
