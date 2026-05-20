@@ -10,6 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -28,9 +29,21 @@ class UrgencyReportItemRepositoryTest {
     @Inject
     EntityManager entityManager;
 
+    @BeforeEach
+    @Transactional
+    void cleanDatabase() {
+
+        entityManager.createQuery("DELETE FROM UrgencyReportItemJpaEntity")
+                .executeUpdate();
+
+        entityManager.createQuery("DELETE FROM WeeklyReportJpaEntity")
+                .executeUpdate();
+    }
+
     @Test
     @Transactional
     void shouldPersistUrgencyReportItemSuccessfully() {
+
         UUID weeklyReportId = UUID.randomUUID();
 
         WeeklyReport weeklyReport = new WeeklyReport(
@@ -41,7 +54,9 @@ class UrgencyReportItemRepositoryTest {
                 10
         );
 
-        WeeklyReportJpaEntity weeklyReportJpaEntity = WeeklyReportMapper.toJpaEntity(weeklyReport);
+        WeeklyReportJpaEntity weeklyReportJpaEntity =
+                WeeklyReportMapper.toJpaEntity(weeklyReport);
+
         entityManager.persist(weeklyReportJpaEntity);
 
         UrgencyReportItem urgencyReportItem = new UrgencyReportItem(
@@ -49,10 +64,16 @@ class UrgencyReportItemRepositoryTest {
                 4
         );
 
-        urgencyReportItemRepository.save(urgencyReportItem, weeklyReportJpaEntity);
+        urgencyReportItemRepository.save(
+                urgencyReportItem,
+                weeklyReportJpaEntity
+        );
 
         List<UrgencyReportItemJpaEntity> results = entityManager
-                .createQuery("SELECT u FROM UrgencyReportItemJpaEntity u", UrgencyReportItemJpaEntity.class)
+                .createQuery(
+                        "SELECT u FROM UrgencyReportItemJpaEntity u",
+                        UrgencyReportItemJpaEntity.class
+                )
                 .getResultList();
 
         assertEquals(1, results.size());
