@@ -42,7 +42,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
 
         return buildResponse(
                 Response.Status.INTERNAL_SERVER_ERROR,
-                "Erro interno ao processar a solicitação"
+                "Internal error while processing the request"
         );
     }
 

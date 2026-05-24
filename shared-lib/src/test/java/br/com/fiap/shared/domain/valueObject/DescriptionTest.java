@@ -16,16 +16,36 @@ public class DescriptionTest {
 
     @Test
     void deveLancarExcecaoParaValorNulo() {
-        assertThrows(ValidationException.class, () -> new Description(null));
+        ValidationException ex = assertThrows(ValidationException.class, () -> new Description(null));
+        assertEquals("Description must not be null or blank", ex.getMessage());
     }
 
     @Test
     void deveLancarExcecaoParaValorVazio() {
-        assertThrows(ValidationException.class, () -> new Description(""));
+        ValidationException ex = assertThrows(ValidationException.class, () -> new Description(""));
+        assertEquals("Description must not be null or blank", ex.getMessage());
     }
 
     @Test
     void deveLancarExcecaoParaValorEmBranco() {
-        assertThrows(ValidationException.class, () -> new Description("   "));
+        ValidationException ex = assertThrows(ValidationException.class, () -> new Description("   "));
+        assertEquals("Description must not be null or blank", ex.getMessage());
+    }
+
+    @Test
+    void deveCriarDescricaoComTextoLongo() {
+        String textoLongo = "A".repeat(500);
+        Description descricao = new Description(textoLongo);
+        assertEquals(textoLongo, descricao.valor());
+    }
+
+    @Test
+    void deveLancarExcecaoParaValorComApenasTab() {
+        assertThrows(ValidationException.class, () -> new Description("\t"));
+    }
+
+    @Test
+    void deveLancarExcecaoParaValorComApenasNewline() {
+        assertThrows(ValidationException.class, () -> new Description("\n"));
     }
 }

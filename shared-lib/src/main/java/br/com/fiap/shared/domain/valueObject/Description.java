@@ -6,7 +6,7 @@ public record Description(String valor) {
 
     public Description {
         if (valor == null || valor.isBlank()) {
-            throw new ValidationException("Descricao nao pode ser nula ou vazia");
+            throw new ValidationException("Description must not be null or blank");
         }
     }
 }

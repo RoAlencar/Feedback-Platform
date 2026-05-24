@@ -5,14 +5,12 @@ import br.com.fiap.feedback.adapter.output.persistence.entity.FeedbackEntity;
 import br.com.fiap.feedback.adapter.output.persistence.entity.StudentEntity;
 import br.com.fiap.feedback.adapter.output.persistence.mapper.FeedbackMapper;
 import br.com.fiap.feedback.adapter.output.persistence.repository.FeedbackJpaRepository;
-import br.com.fiap.feedback.application.usecase.exceptions.CourseFoundException;
-import br.com.fiap.feedback.application.usecase.exceptions.EnrollmentNotFoundException;
-import br.com.fiap.feedback.application.usecase.exceptions.InvalidFeedbackException;
-import br.com.fiap.feedback.application.usecase.exceptions.StudentNotFoundException;
 import br.com.fiap.feedback.application.service.NotificationService;
 import br.com.fiap.shared.application.port.output.EnrollmentRepositoryPort;
 import br.com.fiap.shared.domain.entity.Enrollment;
 import br.com.fiap.shared.domain.entity.Feedback;
+import br.com.fiap.shared.domain.exception.ValidationException;
+import br.com.fiap.shared.domain.valueObject.EnrollmentStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -41,27 +39,7 @@ public class CreateFeedbackUseCase {
 
         LOG.info("Starting feedback processing");
 
-        validatePayload(command);
-
-        StudentEntity student = entityManager.find(StudentEntity.class, command.studentId());
-        if (student == null) {
-            throw new StudentNotFoundException("Student not found");
-        }
-
-        CourseJpaEntity course = entityManager.find(CourseJpaEntity.class, command.courseId());
-
-        if (course == null) {
-            throw new CourseFoundException("Course not found");
-        }
-
-        Enrollment enrollment = enrollmentRepository
-                .findByStudentAndCourse(command.studentId(), command.courseId())
-                .orElseThrow(() -> new EnrollmentNotFoundException(
-                        "Enrollment not found for the student and course provideds"));
-
-        if (!"ACTIVE".equals(enrollment.getStatus().name())) {
-            throw new IllegalArgumentException("Student enrollment is not active");
-        }
+        validateBusinessRules(command);
 
         Feedback feedback = Feedback.create(
                 command.studentId(),
@@ -75,26 +53,34 @@ public class CreateFeedbackUseCase {
         return feedback;
     }
 
-    private void validatePayload(CreateFeedbackCommand command) {
+    private void validateBusinessRules(CreateFeedbackCommand command) {
 
         if (command.studentId() == null) {
-            throw new InvalidFeedbackException("studentId is required");
+            throw new ValidationException("studentId is required");
         }
 
         if (command.courseId() == null) {
-            throw new InvalidFeedbackException("courseId is required");
+            throw new ValidationException("courseId is required");
         }
 
-        if (command.description() == null || command.description().isBlank()) {
-            throw new InvalidFeedbackException("Description is required");
+        StudentEntity student = entityManager.find(StudentEntity.class, command.studentId());
+        if (student == null) {
+            throw new ValidationException("Student not found: " + command.studentId());
         }
 
-        if (command.score() == null) {
-            throw new InvalidFeedbackException("Score is is required");
+        CourseJpaEntity course = entityManager.find(CourseJpaEntity.class, command.courseId());
+        if (course == null) {
+            throw new ValidationException("Course not found: " + command.courseId());
         }
 
-        if (command.score() < 0 || command.score() > 10) {
-            throw new InvalidFeedbackException("Score should be between 0-10");
+        Enrollment enrollment = enrollmentRepository
+                .findByStudentAndCourse(command.studentId(), command.courseId())
+                .orElseThrow(() -> new ValidationException(
+                        "No enrollment found for student " + command.studentId() + " in course " + command.courseId()));
+
+        if (enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
+            throw new ValidationException(
+                    "Enrollment is not active for student " + command.studentId() + " in course " + command.courseId());
         }
     }
 }
