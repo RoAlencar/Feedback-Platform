@@ -1,62 +1,115 @@
-# analytics-function
+# Analytics Function
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Módulo responsável por disponibilizar relatórios consolidados de feedbacks para consulta administrativa.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Segurança dos endpoints administrativos
 
-## Running the application in dev mode
+Os endpoints administrativos da `analytics-function` são protegidos com Quarkus Security utilizando JWT.
 
-You can run your application in dev mode that enables live coding using:
+A validação é feita por meio de Bearer Token, e o acesso aos relatórios é permitido apenas para usuários com o grupo/perfil `ADMIN`.
 
-```shell script
-./mvnw quarkus:dev
+---
+
+## Endpoints protegidos
+
+### Consultar relatórios semanais em JSON
+
+```http
+GET /admin/reports/weekly
+Authorization: Bearer <token-admin>
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Esse endpoint retorna os relatórios semanais em formato JSON.
 
-## Packaging and running the application
+### Exportar relatórios semanais em CSV
 
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```http
+GET /admin/reports/weekly/export
+Authorization: Bearer <token-admin>
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Esse endpoint retorna os relatórios semanais em formato CSV para exportação/download.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+---
 
-If you want to build an _über-jar_, execute the following command:
+## Configuração JWT
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+A aplicação utiliza a chave pública abaixo para validar os tokens JWT recebidos:
+
+```text
+analytics-function/src/main/resources/security/publicKey.pem
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+A chave privada é utilizada apenas localmente para gerar tokens de desenvolvimento e não deve ser versionada no GitHub:
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```text
+analytics-function/local-keys/privateKey.pem
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+A pasta `local-keys` deve permanecer no `.gitignore`.
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+### Configurações no `application.properties`
+
+```properties
+# JWT Security
+mp.jwt.verify.publickey.location=security/publicKey.pem
+mp.jwt.verify.issuer=feedback-platform
+quarkus.native.resources.includes=security/publicKey.pem
 ```
 
-You can then execute your native executable with: `./target/analytics-function-1.0-SNAPSHOT-runner`
+O `issuer` configurado na aplicação precisa ser o mesmo utilizado na geração do token.
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+---
 
-## Provided Code
+## Geração das chaves JWT locais
 
-### REST
+Para ambientes locais ou em caso de troca de máquina, as chaves podem ser geradas novamente por meio da classe:
 
-Easily start your REST Web Services
+```text
+analytics-function/src/test/java/br/com/fiap/analytics/security/GenerateJwtKeys.java
+```
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Essa classe gera:
+
+```text
+analytics-function/local-keys/privateKey.pem
+analytics-function/src/main/resources/security/publicKey.pem
+```
+
+A `privateKey.pem` fica apenas no ambiente local e é usada para assinar os tokens.
+
+A `publicKey.pem` fica no projeto e é usada pela aplicação Quarkus para validar os tokens recebidos.
+
+---
+## Comando para gerar as chaves
+
+Executar dentro da pasta `analytics-function`:
+
+```powershell
+mvn test-compile exec:java "-Dexec.mainClass=br.com.fiap.analytics.security.GenerateJwtKeys" "-Dexec.classpathScope=test"
+```
+
+---
+
+## Comando para gerar token ADMIN
+
+Executar dentro da pasta `analytics-function`:
+
+```powershell
+mvn test-compile exec:java "-Dexec.mainClass=br.com.fiap.analytics.security.GenerateAdminToken" "-Dexec.classpathScope=test" "-Dsmallrye.jwt.sign.key.location=file:local-keys/privateKey.pem"
+```
+
+
+---
+
+## Comando para gerar token STUDENT
+
+Executar dentro da pasta `analytics-function`:
+
+```powershell
+mvn test-compile exec:java "-Dexec.mainClass=br.com.fiap.analytics.security.GenerateStudentToken" "-Dexec.classpathScope=test" "-Dsmallrye.jwt.sign.key.location=file:local-keys/privateKey.pem"
+```
+
+---
+
+

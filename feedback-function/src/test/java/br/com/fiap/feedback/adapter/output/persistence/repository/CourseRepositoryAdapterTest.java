@@ -12,12 +12,14 @@ import org.junit.jupiter.api.Test;
 
 import br.com.fiap.shared.domain.entity.Course;
 import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @QuarkusTest
+@QuarkusTestResource(PostgresTestResource.class)
 class CourseRepositoryAdapterTest {
 
     @Inject

@@ -9,6 +9,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -27,9 +28,21 @@ class DailyReportItemRepositoryTest {
     @Inject
     EntityManager entityManager;
 
+    @BeforeEach
+    @Transactional
+    void cleanDatabase() {
+
+        entityManager.createQuery("DELETE FROM DailyReportItemJpaEntity")
+                .executeUpdate();
+
+        entityManager.createQuery("DELETE FROM WeeklyReportJpaEntity")
+                .executeUpdate();
+    }
+
     @Test
     @Transactional
     void shouldPersistDailyReportItemSuccessfully() {
+
         UUID weeklyReportId = UUID.randomUUID();
 
         WeeklyReport weeklyReport = new WeeklyReport(
@@ -40,7 +53,9 @@ class DailyReportItemRepositoryTest {
                 10
         );
 
-        WeeklyReportJpaEntity weeklyReportJpaEntity = WeeklyReportMapper.toJpaEntity(weeklyReport);
+        WeeklyReportJpaEntity weeklyReportJpaEntity =
+                WeeklyReportMapper.toJpaEntity(weeklyReport);
+
         entityManager.persist(weeklyReportJpaEntity);
 
         DailyReportItem dailyReportItem = new DailyReportItem(
@@ -48,10 +63,16 @@ class DailyReportItemRepositoryTest {
                 3
         );
 
-        dailyReportItemRepository.save(dailyReportItem, weeklyReportJpaEntity);
+        dailyReportItemRepository.save(
+                dailyReportItem,
+                weeklyReportJpaEntity
+        );
 
         List<DailyReportItemJpaEntity> results = entityManager
-                .createQuery("SELECT d FROM DailyReportItemJpaEntity d", DailyReportItemJpaEntity.class)
+                .createQuery(
+                        "SELECT d FROM DailyReportItemJpaEntity d",
+                        DailyReportItemJpaEntity.class
+                )
                 .getResultList();
 
         assertEquals(1, results.size());
@@ -59,9 +80,18 @@ class DailyReportItemRepositoryTest {
         DailyReportItemJpaEntity persisted = results.get(0);
 
         assertNotNull(persisted.getId());
-        assertEquals(LocalDate.of(2026, 4, 23), persisted.getDate());
+        assertEquals(
+                LocalDate.of(2026, 4, 23),
+                persisted.getDate()
+        );
+
         assertEquals(3, persisted.getFeedbackCount());
+
         assertNotNull(persisted.getWeeklyReport());
-        assertEquals(weeklyReportId, persisted.getWeeklyReport().getId());
+
+        assertEquals(
+                weeklyReportId,
+                persisted.getWeeklyReport().getId()
+        );
     }
 }
