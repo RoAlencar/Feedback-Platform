@@ -1,5 +1,5 @@
 services:
-  postgres:
+  analytics-postgres:
     image: postgres:16
     container_name: analytics-postgres
     environment:

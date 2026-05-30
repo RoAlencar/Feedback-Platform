@@ -1,5 +1,5 @@
 services:
-  postgres:
+  notification-postgres:
     image: postgres:16
     container_name: notification-postgres
     environment:
