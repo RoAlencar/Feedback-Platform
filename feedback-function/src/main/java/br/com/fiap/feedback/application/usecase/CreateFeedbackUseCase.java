@@ -1,37 +1,39 @@
 package br.com.fiap.feedback.application.usecase;
 
+import org.jboss.logging.Logger;
+
 import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
 import br.com.fiap.feedback.adapter.output.persistence.entity.FeedbackEntity;
 import br.com.fiap.feedback.adapter.output.persistence.entity.StudentEntity;
 import br.com.fiap.feedback.adapter.output.persistence.mapper.FeedbackMapper;
 import br.com.fiap.feedback.adapter.output.persistence.repository.FeedbackJpaRepository;
-import br.com.fiap.feedback.application.service.NotificationService;
 import br.com.fiap.shared.application.port.output.EnrollmentRepositoryPort;
+import br.com.fiap.shared.application.port.output.EventPublisherPort;
 import br.com.fiap.shared.domain.entity.Enrollment;
 import br.com.fiap.shared.domain.entity.Feedback;
+import br.com.fiap.shared.domain.event.FeedbackCreatedEvent;
 import br.com.fiap.shared.domain.exception.ValidationException;
 import br.com.fiap.shared.domain.valueObject.EnrollmentStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class CreateFeedbackUseCase {
 
     private static final Logger LOG = Logger.getLogger(CreateFeedbackUseCase.class);
 
-    private final NotificationService notificationService;
     private final EntityManager entityManager;
     private final FeedbackJpaRepository feedbackRepository;
     private final EnrollmentRepositoryPort enrollmentRepository;
+    private final EventPublisherPort eventPublisher;
 
     public CreateFeedbackUseCase(EntityManager entityManager, FeedbackJpaRepository feedbackRepository,
-            EnrollmentRepositoryPort enrollmentRepository, NotificationService notificationService) {
+            EnrollmentRepositoryPort enrollmentRepository, EventPublisherPort eventPublisher) {
         this.entityManager = entityManager;
         this.feedbackRepository = feedbackRepository;
         this.enrollmentRepository = enrollmentRepository;
-        this.notificationService = notificationService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -49,8 +51,18 @@ public class CreateFeedbackUseCase {
 
         FeedbackEntity entity = FeedbackMapper.toJpaEntity(feedback, entityManager);
         feedbackRepository.persist(entity);
+        eventPublisher.publish(buildFeedbackCreatedEvent(feedback));
 
         return feedback;
+    }
+
+    private FeedbackCreatedEvent buildFeedbackCreatedEvent(Feedback feedback) {
+        return new FeedbackCreatedEvent(
+                feedback.getId(),
+                feedback.getDescription().valor(),
+                feedback.getScore().valor(),
+                feedback.getUrgency().name(),
+                feedback.getSubmittedAt());
     }
 
     private void validateBusinessRules(CreateFeedbackCommand command) {

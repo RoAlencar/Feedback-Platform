@@ -1,4 +1,4 @@
-package br.com.fiap.feedback.adapter.output.persistence.repository;
+package br.com.fiap.analytics.adapter.output.persistence.repository;
 
 import java.util.Map;
 
@@ -7,9 +7,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class PostgresTestResource implements QuarkusTestResourceLifecycleManager {
+
     @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-            .withDatabaseName("feedback_test")
+            .withDatabaseName("analytics_test")
             .withUsername("test")
             .withPassword("test");
 
@@ -22,11 +23,7 @@ public class PostgresTestResource implements QuarkusTestResourceLifecycleManager
                 "quarkus.datasource.jdbc.url", postgres.getJdbcUrl(),
                 "quarkus.datasource.username", postgres.getUsername(),
                 "quarkus.datasource.password", postgres.getPassword(),
-
-                // IMPORTANTE: agora Flyway roda igual prod
                 "quarkus.flyway.migrate-at-start", "true",
-
-                // deixa schema controlado pelo Flyway
                 "quarkus.hibernate-orm.database.generation", "none");
     }
 

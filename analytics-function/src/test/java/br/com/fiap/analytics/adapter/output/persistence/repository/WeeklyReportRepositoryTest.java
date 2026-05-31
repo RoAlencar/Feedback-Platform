@@ -1,19 +1,22 @@
 package br.com.fiap.analytics.adapter.output.persistence.repository;
 
-import br.com.fiap.analytics.adapter.output.persistence.entity.WeeklyReportJpaEntity;
-import br.com.fiap.shared.domain.entity.WeeklyReport;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+
+import br.com.fiap.analytics.adapter.output.persistence.entity.WeeklyReportJpaEntity;
+import br.com.fiap.shared.domain.entity.WeeklyReport;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
 @QuarkusTest
+@QuarkusTestResource(PostgresTestResource.class)
 class WeeklyReportRepositoryTest {
 
     @Inject
@@ -31,8 +34,7 @@ class WeeklyReportRepositoryTest {
                 LocalDate.of(2026, 4, 21),
                 LocalDate.of(2026, 4, 27),
                 new BigDecimal("4.50"),
-                10
-        );
+                10);
 
         weeklyReportRepository.save(weeklyReport);
 

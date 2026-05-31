@@ -4,8 +4,8 @@ import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
 import br.com.fiap.feedback.adapter.output.persistence.entity.FeedbackEntity;
 import br.com.fiap.feedback.adapter.output.persistence.entity.StudentEntity;
 import br.com.fiap.feedback.adapter.output.persistence.repository.FeedbackJpaRepository;
-import br.com.fiap.feedback.application.service.NotificationService;
 import br.com.fiap.shared.application.port.output.EnrollmentRepositoryPort;
+import br.com.fiap.shared.application.port.output.EventPublisherPort;
 import br.com.fiap.shared.domain.entity.Enrollment;
 import br.com.fiap.shared.domain.entity.Feedback;
 import br.com.fiap.shared.domain.exception.ValidationException;
@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +42,7 @@ class CreateFeedbackUseCaseTest {
     private EnrollmentRepositoryPort enrollmentRepository;
 
     @Mock
-    private NotificationService notificationService;
+    private EventPublisherPort eventPublisher;
 
     private CreateFeedbackUseCase useCase;
 
@@ -57,19 +56,23 @@ class CreateFeedbackUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new CreateFeedbackUseCase(entityManager, feedbackRepository, enrollmentRepository, notificationService);
+        useCase = new CreateFeedbackUseCase(entityManager, feedbackRepository, enrollmentRepository,
+                eventPublisher);
 
         studentEntity = new StudentEntity();
         courseEntity = new CourseJpaEntity();
-        activeEnrollment = new Enrollment(UUID.randomUUID(), STUDENT_ID, COURSE_ID, LocalDate.now(), EnrollmentStatus.ACTIVE);
-        inactiveEnrollment = new Enrollment(UUID.randomUUID(), STUDENT_ID, COURSE_ID, LocalDate.now(), EnrollmentStatus.INACTIVE);
+        activeEnrollment = new Enrollment(UUID.randomUUID(), STUDENT_ID, COURSE_ID, LocalDate.now(),
+                EnrollmentStatus.ACTIVE);
+        inactiveEnrollment = new Enrollment(UUID.randomUUID(), STUDENT_ID, COURSE_ID, LocalDate.now(),
+                EnrollmentStatus.INACTIVE);
     }
 
     @Test
     void deveCriarFeedbackComSucesso() {
         when(entityManager.find(StudentEntity.class, STUDENT_ID)).thenReturn(studentEntity);
         when(entityManager.find(CourseJpaEntity.class, COURSE_ID)).thenReturn(courseEntity);
-        when(enrollmentRepository.findByStudentAndCourse(STUDENT_ID, COURSE_ID)).thenReturn(Optional.of(activeEnrollment));
+        when(enrollmentRepository.findByStudentAndCourse(STUDENT_ID, COURSE_ID))
+                .thenReturn(Optional.of(activeEnrollment));
 
         CreateFeedbackCommand command = new CreateFeedbackCommand(STUDENT_ID, COURSE_ID, "Great course", 8);
         Feedback feedback = useCase.execute(command);
@@ -78,6 +81,7 @@ class CreateFeedbackUseCaseTest {
         assertEquals("Great course", feedback.getDescription().valor());
         assertEquals(8, feedback.getScore().valor());
         verify(feedbackRepository).persist(any(FeedbackEntity.class));
+        verify(eventPublisher).publish(any());
     }
 
     @Test
@@ -89,6 +93,7 @@ class CreateFeedbackUseCaseTest {
         ValidationException ex = assertThrows(ValidationException.class, () -> useCase.execute(command));
         assertEquals("Student not found: " + STUDENT_ID, ex.getMessage());
         verify(feedbackRepository, never()).persist(any(FeedbackEntity.class));
+        verify(eventPublisher, never()).publish(any());
     }
 
     @Test
@@ -101,6 +106,7 @@ class CreateFeedbackUseCaseTest {
         ValidationException ex = assertThrows(ValidationException.class, () -> useCase.execute(command));
         assertEquals("Course not found: " + COURSE_ID, ex.getMessage());
         verify(feedbackRepository, never()).persist(any(FeedbackEntity.class));
+        verify(eventPublisher, never()).publish(any());
     }
 
     @Test
@@ -114,19 +120,22 @@ class CreateFeedbackUseCaseTest {
         ValidationException ex = assertThrows(ValidationException.class, () -> useCase.execute(command));
         assertEquals("No enrollment found for student " + STUDENT_ID + " in course " + COURSE_ID, ex.getMessage());
         verify(feedbackRepository, never()).persist(any(FeedbackEntity.class));
+        verify(eventPublisher, never()).publish(any());
     }
 
     @Test
     void deveLancarExcecaoQuandoEnrollmentNaoEstaAtivo() {
         when(entityManager.find(StudentEntity.class, STUDENT_ID)).thenReturn(studentEntity);
         when(entityManager.find(CourseJpaEntity.class, COURSE_ID)).thenReturn(courseEntity);
-        when(enrollmentRepository.findByStudentAndCourse(STUDENT_ID, COURSE_ID)).thenReturn(Optional.of(inactiveEnrollment));
+        when(enrollmentRepository.findByStudentAndCourse(STUDENT_ID, COURSE_ID))
+                .thenReturn(Optional.of(inactiveEnrollment));
 
         CreateFeedbackCommand command = new CreateFeedbackCommand(STUDENT_ID, COURSE_ID, "Great course", 8);
 
         ValidationException ex = assertThrows(ValidationException.class, () -> useCase.execute(command));
         assertEquals("Enrollment is not active for student " + STUDENT_ID + " in course " + COURSE_ID, ex.getMessage());
         verify(feedbackRepository, never()).persist(any(FeedbackEntity.class));
+        verify(eventPublisher, never()).publish(any());
     }
 
     @Test

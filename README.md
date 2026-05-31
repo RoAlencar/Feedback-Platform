@@ -8,39 +8,39 @@
 
 ---
 
-## 📌 Visão Geral
+## 📌 Visão geral
 
-Plataforma de coleta e análise de feedbacks de estudantes, com foco em:
+Plataforma para coleta e análise de feedbacks de estudantes, com foco em:
 
-* Serverless
-* Escalabilidade
-* Baixo acoplamento
-* Processamento orientado a eventos
+- Arquitetura serverless
+- Escalabilidade
+- Baixo acoplamento
+- Processamento orientado a eventos
 
 ---
 
-## 🧠 Arquitetura da Solução
+## 🧠 Arquitetura da solução
 
-A solução segue:
+A solução adota princípios importantes de engenharia de software:
 
-* **Responsabilidade Única (SRP)**
-* **Event-Driven Architecture**
-* **Serverless Computing**
+- **Responsabilidade Única (SRP)**
+- **Arquitetura orientada a eventos**
+- **Computação serverless**
 
 ---
 
 ## 🧩 Módulos
 
-| Módulo                  | Responsabilidade         |
-| ----------------------- | ------------------------ |
-| `feedback-function`     | Recebe feedbacks         |
-| `notification-function` | Notifica críticos        |
-| `analytics-function`    | Gera relatórios          |
-| `shared-lib`            | Contratos compartilhados |
+| Módulo                  | Responsabilidade                            |
+| ----------------------- | ------------------------------------------- |
+| `feedback-function`     | Receber e persistir feedbacks               |
+| `notification-function` | Enviar notificações para feedbacks críticos |
+| `analytics-function`    | Gerar relatórios e métricas                 |
+| `shared-lib`            | Contratos e DTOs compartilhados             |
 
 ---
 
-## 🏗️ Estrutura do Projeto
+## 🏗️ Estrutura do projeto
 
 ```bash
 feedback-platform/
@@ -54,7 +54,7 @@ feedback-platform/
 
 ---
 
-## 🔄 Diagrama de Arquitetura
+## 🔄 Diagrama de arquitetura
 
 ```text
                 ┌───────────────┐
@@ -64,7 +64,7 @@ feedback-platform/
                         ▼
               ┌───────────────────┐
               │ feedback-function │
-              │ (recebe feedback)│
+              │ (recebe feedback) │
               └────────┬─────────┘
                        │
                  (evento)
@@ -82,60 +82,256 @@ feedback-platform/
 
 ---
 
-## 🔄 Fluxo da Aplicação
+## 🔄 Fluxo da aplicação
 
-1. Cliente envia feedback (`POST /avaliacao`)
+1. Cliente envia um feedback (`POST /avaliacao`).
 2. `feedback-function`:
-
-    * valida
-    * salva
-    * publica evento
+   - valida o payload;
+   - persiste o registro;
+   - publica um evento (`feedback.created`).
 3. `notification-function`:
-
-    * consome evento
-    * envia alerta se crítico
+   - consome o evento;
+   - aplica regras de notificação e envia e-mails para casos críticos/altos.
 4. `analytics-function`:
-
-    * roda por agendamento
-    * gera relatório semanal
+   - gera relatórios e métricas (agendado).
 
 ---
 
-## ⚙️ Tecnologias
+## ⚙️ Tecnologias principais
 
-* Java 21
-* Quarkus
-* Serverless
-* Mensageria (Kafka / SQS / PubSub)
-* Banco de dados relacional
+- Java 21
+- Quarkus 3.x
+- Mensageria (Kafka)
+- PostgreSQL (Flyway para migrações)
 
 ---
 
-## ☁️ Modelo Cloud
+## ☁️ Modelo de implantação (visão)
 
-* API Gateway
-* Functions (Lambda / Azure / GCP)
-* Mensageria
-* Banco gerenciado
-* Scheduler (cron)
+- API Gateway
+- Functions (Lambda / Azure Functions / Cloud Run)
+- Mensageria (Kafka / PubSub)
+- Banco gerenciado
+- Scheduler para jobs periódicos
 
 ---
 
 ## 🔐 Segurança
 
-* Controle de acesso
-* Proteção de dados
-* Comunicação segura
+- Autenticação e autorização (JWT para endpoints administrativos)
+- Proteção de dados em trânsito
 
 ---
 
-## 🚀 Deploy
+## ✅ Execução local
 
-Deploy independente por módulo:
+O repositório possui um `docker-compose.yml` na raiz que agrega os `docker-compose.yml` de cada módulo e inicializa a infraestrutura local necessária para executar e verificar a aplicação.
+
+Ao rodar o compose a partir da raiz, serão iniciados (resumo):
+
+- Broker Kafka (topic `feedback.created`) em `localhost:9092`;
+- `feedback-function` e seu Postgres em `localhost:5434`, app em `localhost:8080`;
+- `notification-function`, Postgres em `localhost:5436`, Mailpit em `localhost:1025` (SMTP) e `http://localhost:8025` (UI), app em `localhost:8081`;
+- `analytics-function` e seu Postgres em `localhost:5435`, app em `localhost:8082`.
+
+Como iniciar (a partir da raiz do repositório):
 
 ```bash
-/infra
+docker compose up --build
+# ou
+docker-compose up --build
 ```
+
+Como encerrar e limpar o ambiente local ao final dos testes:
+
+```bash
+docker compose down -v
+# ou
+docker-compose down -v
+```
+
+Esse comando remove os containers e também os volumes criados pelo Compose, evitando sobras de banco/mensageria entre execuções locais.
+
+O que verificar:
+
+- Aguardar logs de inicialização das aplicações Quarkus e a conclusão das migrações Flyway;
+- Abrir `http://localhost:8025` para visualizar e-mails no Mailpit (perfil de desenvolvimento usa Mailpit);
+- Verificar que o container `kafka` está em execução (`docker ps`) e que a porta `9092` está mapeada;
+
+- Para testar, importe a coleção Postman em `postman/feedback-platform-current-state.postman_collection.json` ou utilize os payloads presentes na seção de checklist deste README.
+
+---
+
+## ✅ Checklist de verificação (cenários obrigatórios)
+
+A coleção Postman em `postman/feedback-platform-current-state.postman_collection.json` contém todos esses cenários prontos para execução.
+
+---
+
+### 1. Criação de feedback válido
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "22222222-2222-2222-2222-222222222222",
+  "courseId": "bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb",
+  "description": "Conteúdo bom, exercícios adequados",
+  "score": 9
+}
+```
+
+- Resultado esperado: **HTTP 201** — registro persistido no banco do `feedback-function`.
+
+---
+
+### 2. Feedback crítico gera notificação
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "22222222-2222-2222-2222-222222222222",
+  "courseId": "bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb",
+  "description": "Conteudo péssimo e exercicios inadequados",
+  "score": 2
+}
+```
+
+- Resultado esperado: **HTTP 201** — `notification-function` consome o evento `feedback.created` e Mailpit (`http://localhost:8025`) exibe os e-mails enviados aos administradores.
+
+---
+
+### 3. Estudante inexistente
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "99999999-9999-9999-9999-999999999999",
+  "courseId": "aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa",
+  "description": "Aluno inexistente",
+  "score": 6
+}
+```
+
+- Resultado esperado: **HTTP 400** — validação de existência do estudante.
+
+---
+
+### 4. Curso inexistente
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "11111111-1111-1111-1111-111111111111",
+  "courseId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+  "description": "Curso inexistente",
+  "score": 6
+}
+```
+
+- Resultado esperado: **HTTP 400** — validação de existência do curso.
+
+---
+
+### 5. Matrícula inválida (estudante não matriculado no curso)
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "11111111-1111-1111-1111-111111111111",
+  "courseId": "bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb",
+  "description": "Tentativa com matricula inexistente",
+  "score": 5
+}
+```
+
+> Ana (`11111111-...`) está matriculada em Arquitetura de Software, **não** em Banco de Dados.
+
+- Resultado esperado: **HTTP 400** — validação de matrícula/inscrição.
+
+---
+
+### 6. Payload inválido — falta `studentId`
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "courseId": "aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa",
+  "description": "Payload sem studentId",
+  "score": 7
+}
+```
+
+- Resultado esperado: **HTTP 400** — campo obrigatório ausente.
+
+---
+
+### 7. Score fora do intervalo
+
+- Método: `POST http://localhost:8080/avaliacao`
+- Payload:
+
+```json
+{
+  "studentId": "11111111-1111-1111-1111-111111111111",
+  "courseId": "aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa",
+  "description": "Score invalido",
+  "score": 11
+}
+```
+
+- Resultado esperado: **HTTP 400** — score deve estar entre 0 e 10.
+
+---
+
+### 8. Endpoints protegidos (analytics/admin)
+
+- Método: `GET http://localhost:8082/admin/reports/weekly`
+- Sem token (nenhum header de autorização).
+- Com token de estudante: `Authorization: Bearer <STUDENT_JWT>`
+- Com token ADMIN: `Authorization: Bearer <ADMIN_JWT>`
+
+- Resultado esperado:
+  - Sem token → **HTTP 401**
+  - Token de estudante → **HTTP 403**
+  - Token ADMIN válido → **HTTP 200** com relatório
+
+---
+
+### 9. Processamento analítico (fluxo manual)
+
+- Método: `POST http://localhost:8082/analytics/process-feedback`
+- Payload:
+
+```json
+{
+  "feedbackId": "12345678-1234-1234-1234-123456789012",
+  "description": "Pessimo atendimento",
+  "score": 1,
+  "urgency": "CRITICAL",
+  "submittedAt": "2026-05-30T10:00:00"
+}
+```
+
+- Resultado esperado: **HTTP 200** — processamento registrado.
+
+---
+
+### 10. Observabilidade das notificações
+
+- Passos: enviar o payload do cenário 2 (feedback crítico gera notificação) e abrir `http://localhost:8025`.
+- Resultado esperado: e-mail registrado no Mailpit com conteúdo e destinatários configurados.
 
 ---
 
@@ -143,10 +339,14 @@ Deploy independente por módulo:
 
 ### POST /avaliacao
 
+Request body (exemplo):
+
 ```json
 {
-  "descricao": "string",
-  "nota": 0-10
+  "studentId": "<uuid>",
+  "courseId": "<uuid>",
+  "description": "string",
+  "score": 0
 }
 ```
 
@@ -154,16 +354,16 @@ Deploy independente por módulo:
 
 ## 🚨 Regra de urgência da avaliação
 
-A urgência do feedback será calculada automaticamente a partir da nota informada pelo estudante.
+A urgência do feedback é calculada automaticamente a partir da nota informada:
 
 | Faixa da nota | Urgência |
-|---|---|
-| 0 a 2 | CRITICAL |
-| 3 a 4 | HIGH |
-| 5 a 7 | MEDIUM |
-| 8 a 10 | LOW |
+| ------------- | -------- |
+| 0 a 2         | CRITICAL |
+| 3 a 4         | HIGH     |
+| 5 a 7         | MEDIUM   |
+| 8 a 10        | LOW      |
 
-Quanto menor a nota, maior será a urgência do feedback. Essa informação será persistida internamente no campo `urgency_level`, mas não será retornada no response público do endpoint `POST /avaliacao`, pois será utilizada pelos fluxos internos de notificação, administração e analytics.
+Quanto menor a nota, maior a urgência. Esse valor é persistido internamente no campo `urgency_level` e não é retornado no response público do endpoint `POST /avaliacao`.
 
 ---
 
@@ -171,66 +371,62 @@ Quanto menor a nota, maior será a urgência do feedback. Essa informação ser�
 
 Disparadas quando:
 
-* Nota ≤ 4
+- Nota ≤ 4
 
-Dados:
+Dados enviados nas notificações:
 
-* Descrição
-* Urgência
-* Data
+- Descrição
+- Urgência
+- Data
 
 ---
 
 ## 📊 Relatórios
 
-Gerados semanalmente com:
+Relatórios semanais incluem:
 
-* Média de notas
-* Volume por dia
-* Volume por urgência
-* Lista de feedbacks
+- Média de notas
+- Volume por dia
+- Volume por urgência
+- Lista de feedbacks
 
 ---
 
 ## 🧪 Monitoramento
 
-* Execução das funções
-* Falhas
-* Eventos críticos
+- Execução das funções
+- Falhas e retries
+- Eventos críticos
 
 ---
 
-## 📚 Decisões Arquiteturais
+## 📚 Decisões arquiteturais
 
-* Separação por domínio
-* Comunicação via eventos
-* Serverless para escalabilidade
-* Shared-lib para padronização
+- Separação por domínio
+- Comunicação via eventos
+- Serverless para escalabilidade
+- `shared-lib` para padronização de contratos
 
 ---
 
 ## 🎥 Demonstração
 
-Vídeo mostrando:
-
-* Fluxo completo
-* Funções serverless
-* Ambiente cloud
+Vídeo demonstrando o fluxo completo, as funções e o ambiente local/cloud.
 
 ---
 
-## 👨‍💻 Autor(es)
+## 👨‍💻 Autores
 
 Projeto desenvolvido para o Tech Challenge - Fase 4.
 
-* Everton Barbosa
-* Felipe Tiburcio
-* Lucas Novaes
-* Luís Fernando Nascimento
-* Rodrigo de Alencar Xavier
+- Everton Barbosa
+- Felipe Tiburcio
+- Lucas Novaes
+- Luís Fernando Nascimento
+- Rodrigo de Alencar Xavier
 
 ---
 
-## 💡 Considerações Finais
+## 💡 Considerações finais
 
-Arquitetura preparada para evolução futura, podendo escalar para microserviços completos sem grandes refatorações.
+Arquitetura preparada para evolução futura e migração para microserviços com mínimo impacto.

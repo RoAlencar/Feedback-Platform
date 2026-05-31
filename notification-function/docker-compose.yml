@@ -1,6 +1,5 @@
-
 services:
-  postgres:
+  notification-postgres:
     image: postgres:16
     container_name: notification-postgres
     environment:
@@ -11,6 +10,15 @@ services:
       - "5436:5432"
     volumes:
       - notification_postgres_data:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: notification-mailpit
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    environment:
+      MP_MAX_MESSAGES: 100
 
 volumes:
   notification_postgres_data:

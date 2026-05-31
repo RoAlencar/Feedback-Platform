@@ -1,6 +1,5 @@
 package br.com.fiap.feedback.adapter.output.persistence;
 
-import br.com.fiap.feedback.adapter.output.persistence.entity.FeedbackEntity;
 import br.com.fiap.feedback.adapter.output.persistence.mapper.FeedbackMapper;
 import br.com.fiap.feedback.adapter.output.persistence.repository.FeedbackJpaRepository;
 import br.com.fiap.shared.application.port.output.FeedbackRepositoryPort;

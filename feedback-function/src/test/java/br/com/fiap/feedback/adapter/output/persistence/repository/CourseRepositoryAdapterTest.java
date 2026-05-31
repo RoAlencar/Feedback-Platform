@@ -6,16 +6,14 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
+import br.com.fiap.shared.application.port.output.CourseRepositoryPort;
 import br.com.fiap.shared.domain.entity.Course;
-import br.com.fiap.feedback.adapter.output.persistence.entity.CourseJpaEntity;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @QuarkusTest
@@ -23,10 +21,7 @@ import jakarta.transaction.Transactional;
 class CourseRepositoryAdapterTest {
 
     @Inject
-    CourseRepositoryAdapter courseRepository;
-
-    @Inject
-    EntityManager entityManager;
+    CourseRepositoryPort courseRepository;
 
     @Test
     @Transactional
@@ -35,11 +30,11 @@ class CourseRepositoryAdapterTest {
 
         courseRepository.save(course);
 
-        CourseJpaEntity persisted = entityManager.find(CourseJpaEntity.class, course.getId());
+        Optional<Course> persisted = courseRepository.findById(course.getId());
 
-        assertNotNull(persisted);
-        assertEquals(course.getId(), persisted.getId());
-        assertEquals("Java Programming", persisted.getName());
+        assertTrue(persisted.isPresent());
+        assertEquals(course.getId(), persisted.get().getId());
+        assertEquals("Java Programming", persisted.get().getName().value());
     }
 
     @Test
@@ -70,7 +65,7 @@ class CourseRepositoryAdapterTest {
     void shouldFindAllCourses() {
         Course course1 = Course.create("Microservices Architecture");
         Course course2 = Course.create("Clean Code Principles");
-        
+
         courseRepository.save(course1);
         courseRepository.save(course2);
 

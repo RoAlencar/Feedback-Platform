@@ -26,8 +26,7 @@ public class FeedbackController {
     @POST
     public Response create(CreateFeedbackRequest request) {
         Feedback feedback = createFeedbackUseCase.execute(
-                FeedbackRequestMapper.toCommand(request)
-        );
+                FeedbackRequestMapper.toCommand(request));
 
         return Response
                 .status(Response.Status.CREATED)

@@ -1,12 +1,11 @@
 package br.com.fiap.shared.application.dto;
 
-import br.com.fiap.shared.domain.entity.Feedback;
-import br.com.fiap.shared.domain.valueObject.ProcessStatus;
-import org.junit.jupiter.api.Test;
-
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import br.com.fiap.shared.domain.entity.Feedback;
 
 public class FeedbackResponseTest {
 

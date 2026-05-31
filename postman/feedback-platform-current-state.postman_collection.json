@@ -1,0 +1,755 @@
+{
+  "info": {
+    "_postman_id": "8b60e6f1-1f0d-4d7b-9d1c-a3ebde654001",
+    "name": "Feedback Platform - Current State",
+    "description": "Collection based on the currently implemented behavior in the repository. It expands the executable scenarios mapped to the project requirements, but it still does not claim full end-to-end adherence to the original requirements document because some flows are not implemented in code yet.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Seeded - Success Cases",
+      "item": [
+        {
+          "name": "Create feedback - Ana (Arquitetura) - seeded",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Conteudo claro e organizacao excelente\",\n  \"score\": 9\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Success: uses seed IDs from DB migration (expected 201)."
+          }
+        },
+        {
+          "name": "Create feedback - Bruno (Banco de Dados) - seeded",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"22222222-2222-2222-2222-222222222222\",\n  \"courseId\": \"bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb\",\n  \"description\": \"Conteudo util e exercicios adequados\",\n  \"score\": 8\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Success: Bruno is seeded and enrolled in Banco de Dados (expected 201)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checklist Scenarios",
+      "item": [
+        {
+          "name": "Checklist - Happy path (Bruno score 9)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"22222222-2222-2222-2222-222222222222\",\n  \"courseId\": \"bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb\",\n  \"description\": \"Conteúdo bom, exercícios adequados\",\n  \"score\": 9\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Happy path: Bruno score 9"
+          }
+        },
+        {
+          "name": "Checklist - Sad path (Bruno score 2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"22222222-2222-2222-2222-222222222222\",\n  \"courseId\": \"bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb\",\n  \"description\": \"Conteudo péssimo e exercicios inadequados\",\n  \"score\": 2\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Sad path: Bruno score 2 (should trigger notification)"
+          }
+        },
+        {
+          "name": "Checklist - Student nonexistent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"99999999-9999-9999-9999-999999999999\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Aluno inexistente\",\n  \"score\": 6\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Student UUID not present in DB - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Course nonexistent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee\",\n  \"description\": \"Curso inexistente\",\n  \"score\": 6\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Course UUID not present in DB - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Invalid enrollment (Ana in DB)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb\",\n  \"description\": \"Tentativa com matricula inexistente\",\n  \"score\": 5\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Student not enrolled in course - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Missing studentId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Payload sem studentId\",\n  \"score\": 7\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Missing studentId - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Missing courseId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"description\": \"Payload sem courseId\",\n  \"score\": 7\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Missing courseId - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Score out of range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Score invalido\",\n  \"score\": 11\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Score out of range - expect 400"
+          }
+        },
+        {
+          "name": "Checklist - Manual analytics processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feedbackId\": \"12345678-1234-1234-1234-123456789012\",\n  \"description\": \"Pessimo atendimento\",\n  \"score\": 1,\n  \"urgency\": \"CRITICAL\",\n  \"submittedAt\": \"2026-05-30T10:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{analytics_base_url}}/analytics/process-feedback",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "process-feedback"
+              ]
+            },
+            "description": "Manual analytics processing - expect 200"
+          }
+        }
+      ]
+    },
+    {
+      "name": "feedback-function",
+      "item": [
+        {
+          "name": "Create student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aluno Postman {{$timestamp}}\",\n  \"email\": \"aluno.postman.{{$timestamp}}@fiap.com.br\"\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/students",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "students"
+              ]
+            },
+            "description": "Creates a new student in feedback-function."
+          }
+        },
+        {
+          "name": "Create feedback - student not found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"99999999-9999-9999-9999-999999999999\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Aluno inexistente\",\n  \"score\": 6\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because the student UUID does not exist in the feedback database."
+          }
+        },
+        {
+          "name": "Create feedback - course not found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee\",\n  \"description\": \"Curso inexistente\",\n  \"score\": 6\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because the course UUID does not exist in the feedback database."
+          }
+        },
+        {
+          "name": "Create feedback - valid seeded enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Conteudo claro e organizacao excelente\",\n  \"score\": 9\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Creates a feedback using seeded student/course IDs that are enrolled in the local seed migration."
+          }
+        },
+        {
+          "name": "Create feedback - invalid enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb\",\n  \"description\": \"Tentativa com matricula inexistente\",\n  \"score\": 5\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because the seeded student Ana is not enrolled in Banco de Dados."
+          }
+        },
+        {
+          "name": "Create feedback - missing studentId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Payload sem studentId\",\n  \"score\": 7\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because studentId is required by the use case."
+          }
+        },
+        {
+          "name": "Create feedback - missing courseId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"description\": \"Payload sem courseId\",\n  \"score\": 7\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because courseId is required by the use case."
+          }
+        },
+        {
+          "name": "Create feedback - score out of range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"11111111-1111-1111-1111-111111111111\",\n  \"courseId\": \"aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa\",\n  \"description\": \"Score invalido\",\n  \"score\": 11\n}"
+            },
+            "url": {
+              "raw": "{{feedback_base_url}}/avaliacao",
+              "host": [
+                "{{feedback_base_url}}"
+              ],
+              "path": [
+                "avaliacao"
+              ]
+            },
+            "description": "Returns 400 because score must be between 0 and 10."
+          }
+        }
+      ]
+    },
+    {
+      "name": "notification-function",
+      "item": [
+        {
+          "name": "Create admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin Postman {{$timestamp}}\",\n  \"email\": \"admin.postman.{{$timestamp}}@fiap.com.br\"\n}"
+            },
+            "url": {
+              "raw": "{{notification_base_url}}/admins",
+              "host": [
+                "{{notification_base_url}}"
+              ],
+              "path": [
+                "admins"
+              ]
+            },
+            "description": "Creates an admin in notification-function."
+          }
+        },
+        {
+          "name": "Receive notification payload - debug only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feedbackId\": \"{{sample_feedback_id}}\",\n  \"description\": \"Pessimo atendimento\",\n  \"score\": 1,\n  \"urgency\": \"CRITICAL\",\n  \"submittedAt\": \"2026-05-30T10:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{notification_base_url}}/notifications",
+              "host": [
+                "{{notification_base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "Debug endpoint only. It logs the payload and returns 200, but it is not proof of the official notification requirement."
+          }
+        }
+      ]
+    },
+    {
+      "name": "analytics-function",
+      "item": [
+        {
+          "name": "Process feedback manually",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feedbackId\": \"{{sample_feedback_id}}\",\n  \"description\": \"Pessimo atendimento\",\n  \"score\": 1,\n  \"urgency\": \"CRITICAL\",\n  \"submittedAt\": \"2026-05-30T10:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{analytics_base_url}}/analytics/process-feedback",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "process-feedback"
+              ]
+            },
+            "description": "Manual analytics processing endpoint. This is only a partial replacement for the missing automated event-driven flow."
+          }
+        },
+        {
+          "name": "Get weekly reports (ADMIN JWT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{analytics_base_url}}/admin/reports/weekly",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reports",
+                "weekly"
+              ]
+            },
+            "description": "Protected endpoint. Requires an ADMIN JWT generated from analytics-function local test helpers."
+          }
+        },
+        {
+          "name": "Get weekly reports without token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analytics_base_url}}/admin/reports/weekly",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reports",
+                "weekly"
+              ]
+            },
+            "description": "Protected endpoint. Expected to fail with an authentication error when no JWT is sent."
+          }
+        },
+        {
+          "name": "Get weekly reports (STUDENT JWT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{analytics_base_url}}/admin/reports/weekly",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reports",
+                "weekly"
+              ]
+            },
+            "description": "Protected endpoint. Expected to fail with an authorization error because the route requires the ADMIN role."
+          }
+        },
+        {
+          "name": "Export weekly reports CSV (ADMIN JWT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{analytics_base_url}}/admin/reports/weekly/export",
+              "host": [
+                "{{analytics_base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reports",
+                "weekly",
+                "export"
+              ]
+            },
+            "description": "Protected CSV export endpoint. Requires an ADMIN JWT."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "feedback_base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "notification_base_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "analytics_base_url",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "student_token",
+      "value": ""
+    },
+    {
+      "key": "seed_student_ana",
+      "value": "11111111-1111-1111-1111-111111111111"
+    },
+    {
+      "key": "seed_student_bruno",
+      "value": "22222222-2222-2222-2222-222222222222"
+    },
+    {
+      "key": "seed_student_fernanda",
+      "value": "55555555-5555-5555-5555-555555555555"
+    },
+    {
+      "key": "seed_course_architecture",
+      "value": "aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"
+    },
+    {
+      "key": "seed_course_databases",
+      "value": "bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"
+    },
+    {
+      "key": "missing_student_id",
+      "value": "99999999-9999-9999-9999-999999999999"
+    },
+    {
+      "key": "missing_course_id",
+      "value": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+    },
+    {
+      "key": "sample_feedback_id",
+      "value": "12345678-1234-1234-1234-123456789012"
+    }
+  ]
+}

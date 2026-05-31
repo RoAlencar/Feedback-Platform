@@ -1,97 +1,84 @@
 package br.com.fiap.analytics.adapter.output.persistence.repository;
 
-import br.com.fiap.analytics.adapter.output.persistence.entity.DailyReportItemJpaEntity;
-import br.com.fiap.analytics.adapter.output.persistence.entity.WeeklyReportJpaEntity;
-import br.com.fiap.analytics.adapter.output.persistence.mapper.WeeklyReportMapper;
-import br.com.fiap.shared.domain.entity.DailyReportItem;
-import br.com.fiap.shared.domain.entity.WeeklyReport;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+
+import br.com.fiap.analytics.adapter.output.persistence.entity.DailyReportItemJpaEntity;
+import br.com.fiap.analytics.adapter.output.persistence.entity.WeeklyReportJpaEntity;
+import br.com.fiap.analytics.adapter.output.persistence.mapper.WeeklyReportMapper;
+import br.com.fiap.shared.domain.entity.DailyReportItem;
+import br.com.fiap.shared.domain.entity.WeeklyReport;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @QuarkusTest
-class DailyReportItemRepositoryTest {
+@QuarkusTestResource(PostgresTestResource.class)
+class DailyReportItemTest {
 
-    @Inject
-    DailyReportItemRepository dailyReportItemRepository;
+        @Inject
+        DailyReportItemRepository dailyReportItemRepository;
 
-    @Inject
-    EntityManager entityManager;
+        @Inject
+        EntityManager entityManager;
 
-    @BeforeEach
-    @Transactional
-    void cleanDatabase() {
+        @Test
+        @Transactional
+        void shouldPersistDailyReportItemSuccessfully() {
 
-        entityManager.createQuery("DELETE FROM DailyReportItemJpaEntity")
-                .executeUpdate();
+                entityManager.createQuery("DELETE FROM DailyReportItemJpaEntity").executeUpdate();
+                entityManager.createQuery("DELETE FROM WeeklyReportJpaEntity").executeUpdate();
 
-        entityManager.createQuery("DELETE FROM WeeklyReportJpaEntity")
-                .executeUpdate();
-    }
+                UUID weeklyReportId = UUID.randomUUID();
 
-    @Test
-    @Transactional
-    void shouldPersistDailyReportItemSuccessfully() {
+                WeeklyReport weeklyReport = new WeeklyReport(
+                                weeklyReportId,
+                                LocalDate.of(2026, 4, 21),
+                                LocalDate.of(2026, 4, 27),
+                                new BigDecimal("4.50"),
+                                10);
 
-        UUID weeklyReportId = UUID.randomUUID();
+                WeeklyReportJpaEntity weeklyReportJpaEntity = WeeklyReportMapper.toJpaEntity(weeklyReport);
 
-        WeeklyReport weeklyReport = new WeeklyReport(
-                weeklyReportId,
-                LocalDate.of(2026, 4, 21),
-                LocalDate.of(2026, 4, 27),
-                new BigDecimal("4.50"),
-                10
-        );
+                entityManager.persist(weeklyReportJpaEntity);
 
-        WeeklyReportJpaEntity weeklyReportJpaEntity =
-                WeeklyReportMapper.toJpaEntity(weeklyReport);
+                DailyReportItem dailyReportItem = new DailyReportItem(
+                                LocalDate.of(2026, 4, 23),
+                                3);
 
-        entityManager.persist(weeklyReportJpaEntity);
+                dailyReportItemRepository.save(
+                                dailyReportItem,
+                                weeklyReportJpaEntity);
 
-        DailyReportItem dailyReportItem = new DailyReportItem(
-                LocalDate.of(2026, 4, 23),
-                3
-        );
+                List<DailyReportItemJpaEntity> results = entityManager
+                                .createQuery(
+                                                "SELECT d FROM DailyReportItemJpaEntity d",
+                                                DailyReportItemJpaEntity.class)
+                                .getResultList();
 
-        dailyReportItemRepository.save(
-                dailyReportItem,
-                weeklyReportJpaEntity
-        );
+                assertEquals(1, results.size());
 
-        List<DailyReportItemJpaEntity> results = entityManager
-                .createQuery(
-                        "SELECT d FROM DailyReportItemJpaEntity d",
-                        DailyReportItemJpaEntity.class
-                )
-                .getResultList();
+                DailyReportItemJpaEntity persisted = results.get(0);
 
-        assertEquals(1, results.size());
+                assertNotNull(persisted.getId());
+                assertEquals(
+                                LocalDate.of(2026, 4, 23),
+                                persisted.getDate());
 
-        DailyReportItemJpaEntity persisted = results.get(0);
+                assertEquals(3, persisted.getFeedbackCount());
 
-        assertNotNull(persisted.getId());
-        assertEquals(
-                LocalDate.of(2026, 4, 23),
-                persisted.getDate()
-        );
+                assertNotNull(persisted.getWeeklyReport());
 
-        assertEquals(3, persisted.getFeedbackCount());
-
-        assertNotNull(persisted.getWeeklyReport());
-
-        assertEquals(
-                weeklyReportId,
-                persisted.getWeeklyReport().getId()
-        );
-    }
+                assertEquals(
+                                weeklyReportId,
+                                persisted.getWeeklyReport().getId());
+        }
 }
