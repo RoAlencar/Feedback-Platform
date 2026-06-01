@@ -91,7 +91,7 @@ feedback-platform/
    - publica um evento (`feedback.created`).
 3. `notification-function`:
    - consome o evento;
-   - aplica regras de notificação e envia e-mails para casos críticos/altos.
+   - aplica regras de notificação e envia e-mails para casos críticos.
 4. `analytics-function`:
    - consome o evento feedback.created via Kafka;
    - registra o evento no analytics_platform;
@@ -363,9 +363,11 @@ Quanto menor a nota, maior a urgência. Esse valor é persistido internamente no
 
 ## 🔔 Notificações
 
-Disparadas quando:
+As notificações são disparadas quando o feedback é classificado como `CRITICAL`.
 
-- Nota ≤ 4
+No fluxo atual, isso corresponde a feedbacks com nota de `0 a 2`.
+
+Feedbacks com urgência `HIGH`, `MEDIUM` ou `LOW` podem ser consumidos pelos módulos, mas não geram persistência/envio de notificação.
 
 Dados enviados nas notificações:
 

@@ -1,9 +1,11 @@
 {
   "info": {
-    "_postman_id": "8b60e6f1-1f0d-4d7b-9d1c-a3ebde654001",
+    "_postman_id": "6c66e6b3-4364-4b76-ba68-a75be854ff72",
     "name": "Feedback Platform - Current State",
     "description": "Collection based on the currently implemented behavior in the repository. It expands the executable scenarios mapped to the project requirements, but it still does not claim full end-to-end adherence to the original requirements document because some flows are not implemented in code yet.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48649452",
+    "_collection_link": "https://go.postman.co/collection/48649452-6c66e6b3-4364-4b76-ba68-a75be854ff72?source=collection_link"
   },
   "item": [
     {
@@ -33,7 +35,8 @@
               ]
             },
             "description": "Success: uses seed IDs from DB migration (expected 201)."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - Bruno (Banco de Dados) - seeded",
@@ -59,7 +62,8 @@
               ]
             },
             "description": "Success: Bruno is seeded and enrolled in Banco de Dados (expected 201)."
-          }
+          },
+          "response": []
         }
       ]
     },
@@ -90,7 +94,8 @@
               ]
             },
             "description": "Happy path: Bruno score 9"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Sad path (Bruno score 2)",
@@ -116,7 +121,8 @@
               ]
             },
             "description": "Sad path: Bruno score 2 (should trigger notification)"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Student nonexistent",
@@ -142,7 +148,8 @@
               ]
             },
             "description": "Student UUID not present in DB - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Course nonexistent",
@@ -168,7 +175,8 @@
               ]
             },
             "description": "Course UUID not present in DB - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Invalid enrollment (Ana in DB)",
@@ -194,7 +202,8 @@
               ]
             },
             "description": "Student not enrolled in course - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Missing studentId",
@@ -220,7 +229,8 @@
               ]
             },
             "description": "Missing studentId - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Missing courseId",
@@ -246,7 +256,8 @@
               ]
             },
             "description": "Missing courseId - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Score out of range",
@@ -272,7 +283,8 @@
               ]
             },
             "description": "Score out of range - expect 400"
-          }
+          },
+          "response": []
         },
         {
           "name": "Checklist - Manual analytics processing",
@@ -299,7 +311,8 @@
               ]
             },
             "description": "Manual analytics processing - expect 200"
-          }
+          },
+          "response": []
         }
       ]
     },
@@ -330,7 +343,8 @@
               ]
             },
             "description": "Creates a new student in feedback-function."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - student not found",
@@ -356,7 +370,8 @@
               ]
             },
             "description": "Returns 400 because the student UUID does not exist in the feedback database."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - course not found",
@@ -382,7 +397,8 @@
               ]
             },
             "description": "Returns 400 because the course UUID does not exist in the feedback database."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - valid seeded enrollment",
@@ -408,7 +424,8 @@
               ]
             },
             "description": "Creates a feedback using seeded student/course IDs that are enrolled in the local seed migration."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - invalid enrollment",
@@ -434,7 +451,8 @@
               ]
             },
             "description": "Returns 400 because the seeded student Ana is not enrolled in Banco de Dados."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - missing studentId",
@@ -460,7 +478,8 @@
               ]
             },
             "description": "Returns 400 because studentId is required by the use case."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - missing courseId",
@@ -486,7 +505,8 @@
               ]
             },
             "description": "Returns 400 because courseId is required by the use case."
-          }
+          },
+          "response": []
         },
         {
           "name": "Create feedback - score out of range",
@@ -512,7 +532,8 @@
               ]
             },
             "description": "Returns 400 because score must be between 0 and 10."
-          }
+          },
+          "response": []
         }
       ]
     },
@@ -543,7 +564,8 @@
               ]
             },
             "description": "Creates an admin in notification-function."
-          }
+          },
+          "response": []
         },
         {
           "name": "Receive notification payload - debug only",
@@ -569,40 +591,14 @@
               ]
             },
             "description": "Debug endpoint only. It logs the payload and returns 200, but it is not proof of the official notification requirement."
-          }
+          },
+          "response": []
         }
       ]
     },
     {
       "name": "analytics-function",
       "item": [
-        {
-          "name": "Process feedback manually",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"feedbackId\": \"{{sample_feedback_id}}\",\n  \"description\": \"Pessimo atendimento\",\n  \"score\": 1,\n  \"urgency\": \"CRITICAL\",\n  \"submittedAt\": \"2026-05-30T10:00:00\"\n}"
-            },
-            "url": {
-              "raw": "{{analytics_base_url}}/analytics/process-feedback",
-              "host": [
-                "{{analytics_base_url}}"
-              ],
-              "path": [
-                "analytics",
-                "process-feedback"
-              ]
-            },
-            "description": "Manual analytics processing endpoint. This is only a partial replacement for the missing automated event-driven flow."
-          }
-        },
         {
           "name": "Get weekly reports (ADMIN JWT)",
           "request": {
@@ -625,7 +621,8 @@
               ]
             },
             "description": "Protected endpoint. Requires an ADMIN JWT generated from analytics-function local test helpers."
-          }
+          },
+          "response": []
         },
         {
           "name": "Get weekly reports without token",
@@ -644,7 +641,8 @@
               ]
             },
             "description": "Protected endpoint. Expected to fail with an authentication error when no JWT is sent."
-          }
+          },
+          "response": []
         },
         {
           "name": "Get weekly reports (STUDENT JWT)",
@@ -668,7 +666,8 @@
               ]
             },
             "description": "Protected endpoint. Expected to fail with an authorization error because the route requires the ADMIN role."
-          }
+          },
+          "response": []
         },
         {
           "name": "Export weekly reports CSV (ADMIN JWT)",
@@ -693,7 +692,8 @@
               ]
             },
             "description": "Protected CSV export endpoint. Requires an ADMIN JWT."
-          }
+          },
+          "response": []
         }
       ]
     }
