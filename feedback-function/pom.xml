@@ -100,6 +100,11 @@
             <artifactId>quarkus-jdbc-postgresql</artifactId>
         </dependency>
 
+	<dependency>
+   	    <groupId>com.google.cloud.sql</groupId>
+    	   <artifactId>postgres-socket-factory</artifactId>
+	</dependency>
+
         <!-- Flyway -->
         <dependency>
             <groupId>io.quarkus</groupId>

@@ -1,0 +1,13 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-f',
+        'src/main/docker/Dockerfile.jvm',
+        '-t',
+        'southamerica-east1-docker.pkg.dev/feedback-platform-497515/feedback-platform/notification-function:v2',
+        '.'
+      ]
+images:
+  - 'southamerica-east1-docker.pkg.dev/feedback-platform-497515/feedback-platform/notification-function:v2'
