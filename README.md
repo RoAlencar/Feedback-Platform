@@ -93,7 +93,9 @@ feedback-platform/
    - consome o evento;
    - aplica regras de notificação e envia e-mails para casos críticos/altos.
 4. `analytics-function`:
-   - gera relatórios e métricas (agendado).
+   - consome o evento feedback.created via Kafka;
+   - registra o evento no analytics_platform;
+   - atualiza os relatórios semanais automaticamente.
 
 ---
 
@@ -112,7 +114,7 @@ feedback-platform/
 - Functions (Lambda / Azure Functions / Cloud Run)
 - Mensageria (Kafka / PubSub)
 - Banco gerenciado
-- Scheduler para jobs periódicos
+- Processamento assíncrono via Kafka
 
 ---
 
@@ -309,24 +311,16 @@ A coleção Postman em `postman/feedback-platform-current-state.postman_collecti
 
 ---
 
-### 9. Processamento analítico (fluxo manual)
+### 9. Processamento analítico automático
 
-- Método: `POST http://localhost:8082/analytics/process-feedback`
-- Payload:
+- Enviar um feedback em `POST http://localhost:8080/avaliacao`
+- Validar no log do `analytics-function` o consumo do evento `feedback.created`
+- Consultar `GET http://localhost:8082/admin/reports/weekly` com token ADMIN
 
-```json
-{
-  "feedbackId": "12345678-1234-1234-1234-123456789012",
-  "description": "Pessimo atendimento",
-  "score": 1,
-  "urgency": "CRITICAL",
-  "submittedAt": "2026-05-30T10:00:00"
-}
-```
-
-- Resultado esperado: **HTTP 200** — processamento registrado.
-
----
+Resultado esperado:
+- evento salvo em `analytics_feedback_events`;
+- relatório atualizado em `weekly_reports`;
+- itens atualizados em `daily_report_items` e `urgency_report_items`.
 
 ### 10. Observabilidade das notificações
 
@@ -385,10 +379,10 @@ Dados enviados nas notificações:
 
 Relatórios semanais incluem:
 
-- Média de notas
-- Volume por dia
-- Volume por urgência
-- Lista de feedbacks
+- média de notas;
+- total de feedbacks;
+- volume por dia;
+- volume por urgência.
 
 ---
 
