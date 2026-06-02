@@ -1,62 +1,40 @@
 # shared-lib
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Biblioteca compartilhada da Feedback Platform.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+A `shared-lib` centraliza classes reutilizadas pelos módulos da aplicação, como DTOs, eventos, entidades de domínio, value objects, exceptions e contratos de portas.
 
-## Running the application in dev mode
+Ela é utilizada para evitar duplicidade de código e manter os contratos consistentes entre os módulos:
 
-You can run your application in dev mode that enables live coding using:
+- `feedback-function`
+- `notification-function`
+- `analytics-function`
 
-```shell script
-./mvnw quarkus:dev
+---
+
+## Responsabilidade
+
+A responsabilidade principal da `shared-lib` é fornecer contratos e objetos compartilhados entre os módulos da plataforma.
+
+Ela não representa uma aplicação independente e não possui endpoint próprio.
+
+---
+
+## Estrutura principal
+
+```text
+shared-lib/
+└── src/main/java/br/com/fiap/shared
+    ├── application
+    │   ├── dto
+    │   ├── port
+    │   │   ├── input
+    │   │   └── output
+    │   └── usecase
+    ├── common
+    └── domain
+        ├── entity
+        ├── event
+        ├── exception
+        └── valueObject
 ```
-
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
-```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/shared-lib-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)

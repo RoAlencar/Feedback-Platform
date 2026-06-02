@@ -1,0 +1,24 @@
+include:
+  - feedback-function/docker-compose.yml
+  - analytics-function/docker-compose.yml
+  - notification-function/docker-compose.yml
+
+services:
+  # Using Redpanda (Kafka-compatible) broker with a fixed container name
+  kafka:
+    image: redpandadata/redpanda:v24.1.2
+    container_name: kafka-redpanda
+    command: >
+      redpanda start --overprovisioned --smp 1 --memory 1G --reserve-memory 0M --node-id 0 --check=false
+    ports:
+      - "9092:9092" # Kafka protocol
+    # Do not bind Redpanda admin ports to host to avoid conflicts with local processes.
+    # Expose them only to other containers on the compose network if needed.
+    expose:
+      - "8082"
+      - "9644"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+
+volumes:
+  redpanda_data:

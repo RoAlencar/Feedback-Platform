@@ -1,22 +1,18 @@
 package br.com.fiap.feedback.adapter.output.persistence.entity;
 
-import br.com.fiap.shared.domain.entity.Feedback;
-import br.com.fiap.shared.domain.valueObject.Description;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import br.com.fiap.shared.domain.valueObject.ProcessStatus;
-import br.com.fiap.shared.domain.valueObject.Score;
 import br.com.fiap.shared.domain.valueObject.UrgencyLevel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "feedbacks")
@@ -50,29 +46,67 @@ public class FeedbackEntity {
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
 
-    public static FeedbackEntity fromDomain(Feedback feedback, EntityManager em) {
-        FeedbackEntity entity = new FeedbackEntity();
-        entity.id = feedback.getId();
-        entity.student = em.getReference(StudentEntity.class, feedback.getStudentId());
-        entity.course = em.getReference(CourseJpaEntity.class, feedback.getCourseId());
-        entity.description = feedback.getDescription().valor();
-        entity.score = feedback.getScore().valor();
-        entity.urgency = feedback.getUrgency();
-        entity.processStatus = feedback.getStatus();
-        entity.submittedAt = feedback.getSubmittedAt();
-
-        return entity;
+    public UUID getId() {
+        return id;
     }
 
-    public Feedback toDomain() {
-        return new Feedback(
-                id,
-                student.getId(),
-                course.getId(),
-                new Description(description),
-                new Score(score),
-                processStatus,
-                submittedAt
-        );
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public StudentEntity getStudent() {
+        return student;
+    }
+
+    public void setStudent(StudentEntity student) {
+        this.student = student;
+    }
+
+    public CourseJpaEntity getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseJpaEntity course) {
+        this.course = course;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public UrgencyLevel getUrgency() {
+        return urgency;
+    }
+
+    public void setUrgency(UrgencyLevel urgency) {
+        this.urgency = urgency;
+    }
+
+    public ProcessStatus getProcessStatus() {
+        return processStatus;
+    }
+
+    public void setProcessStatus(ProcessStatus processStatus) {
+        this.processStatus = processStatus;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }

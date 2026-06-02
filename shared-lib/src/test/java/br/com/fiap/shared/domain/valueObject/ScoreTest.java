@@ -30,23 +30,67 @@ public class ScoreTest {
 
     @Test
     void deveLancarExcecaoParaValorAbaixoDoMinimo() {
-        assertThrows(ValidationException.class, () -> new Score(-1));
+        ValidationException ex = assertThrows(ValidationException.class, () -> new Score(-1));
+        assertEquals("Score must be between 0 and 10, received: -1", ex.getMessage());
     }
 
     @Test
     void deveLancarExcecaoParaValorAcimaDoMaximo() {
-        assertThrows(ValidationException.class, () -> new Score(11));
+        ValidationException ex = assertThrows(ValidationException.class, () -> new Score(11));
+        assertEquals("Score must be between 0 and 10, received: 11", ex.getMessage());
     }
 
     @Test
-    void deveSerCriticaQuandoNotaMenorOuIgualAQuatro() {
+    void deveLancarExcecaoParaValorMuitoAbaixoDoMinimo() {
+        assertThrows(ValidationException.class, () -> new Score(-100));
+    }
+
+    @Test
+    void deveLancarExcecaoParaValorMuitoAcimaDoMaximo() {
+        assertThrows(ValidationException.class, () -> new Score(100));
+    }
+
+    @Test
+    void deveSerCriticaQuandoNotaMenorOuIgualADois() {
         assertTrue(new Score(0).isCritical());
+        assertTrue(new Score(1).isCritical());
         assertTrue(new Score(2).isCritical());
     }
 
     @Test
-    void naoDeveSerCriticaQuandoNotaMaiorQueQuatro() {
+    void naoDeveSerCriticaQuandoNotaMaiorQueDois() {
+        assertFalse(new Score(3).isCritical());
         assertFalse(new Score(5).isCritical());
         assertFalse(new Score(10).isCritical());
+    }
+
+    @Test
+    void deveSerWarningQuandoNotaMenorOuIgualAQuatro() {
+        assertTrue(new Score(0).isWarning());
+        assertTrue(new Score(4).isWarning());
+    }
+
+    @Test
+    void naoDeveSerWarningQuandoNotaMaiorQueQuatro() {
+        assertFalse(new Score(5).isWarning());
+        assertFalse(new Score(10).isWarning());
+    }
+
+    @Test
+    void deveSerAttentionQuandoNotaMenorOuIgualASete() {
+        assertTrue(new Score(0).isAttention());
+        assertTrue(new Score(7).isAttention());
+    }
+
+    @Test
+    void naoDeveSerAttentionQuandoNotaMaiorQueSete() {
+        assertFalse(new Score(8).isAttention());
+        assertFalse(new Score(10).isAttention());
+    }
+
+    @Test
+    void deveSerElevatedQuandoNotaMenorOuIgualADez() {
+        assertTrue(new Score(0).isElevated());
+        assertTrue(new Score(10).isElevated());
     }
 }

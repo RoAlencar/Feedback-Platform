@@ -16,7 +16,7 @@ public record Score(int valor) {
     public Score {
         if (valor < MIN || valor > MAX) {
             throw new ValidationException(
-                    "Nota deve estar entre " + MIN + " e " + MAX + ", recebido: " + valor);
+                    "Score must be between " + MIN + " and " + MAX + ", received: " + valor);
         }
     }
 
